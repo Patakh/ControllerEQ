@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:СontrollerEQ"
         mc:Ignorable="d"
         Title="MainWindow" 
-        WindowState="Maximized" >
+        WindowState="Maximized"
+        Background="Black">
     <Grid Margin="20,20,20,20" VerticalAlignment="Center" HorizontalAlignment="Center">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -16,42 +17,53 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0" Width="300">
-            <Grid Margin="0,25,0,0" Background="#002" Width="300" Height="175" VerticalAlignment="Center">
-                <TextBlock FontFamily="Aria" FontSize="30" Foreground="#fff" Margin="10,10,10,10" HorizontalAlignment="Center">
-                   Окно:
-                </TextBlock>
-                <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <TextBlock Foreground="#aff" FontSize="60" TextAlignment="Center" x:Name="WindowName">
-                           ---
+
+        <Grid Grid.Row="0" Margin="0,15,0,0" Background="#002" Width="250" Height="110">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <WrapPanel Grid.Row="0">
+                <TextBlock FontFamily="Aria" FontSize="25" Foreground="LightYellow" Margin="10,10,10,10" TextWrapping="Wrap">
+                   Окно: 
+                    <TextBlock Foreground="#aff" FontSize="20" x:Name="WindowName">
+                        ---
                     </TextBlock>
-                </WrapPanel>
-            </Grid>
+                </TextBlock>
+            </WrapPanel>
+            <WrapPanel Grid.Row="1">
+                <TextBlock FontSize="25" Foreground="LightYellow" Margin="10,10,10,10" TextWrapping="Wrap">
+                    Талон:
+                    <TextBlock Foreground="#aff" FontSize="20" x:Name="TicketName">
+                        ---
+                    </TextBlock>
+                </TextBlock>
+            </WrapPanel>
         </Grid>
 
-        <WrapPanel Grid.Row="1" Width="300">
-            <Grid Margin="0,25,0,0" Background="Brown" Width="300" Height="50" VerticalAlignment="Center" x:Name="Call">
+        <WrapPanel Grid.Row="1" Margin="0,15,0,0" Width="250">
+            <Grid Background="Brown" Width="250" Height="35" VerticalAlignment="Center" x:Name="Call">
                 <Button Background="Brown" Click="Button_Click">
                     <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <TextBlock FontSize="25" TextAlignment="Center" Foreground="White">
+                        <TextBlock FontSize="20" TextAlignment="Center" Foreground="White">
                           Вызвать
                         </TextBlock>
                     </WrapPanel>
                 </Button>
             </Grid>
-            <Grid Margin="0,25,0,0" Background="ForestGreen" Width="200" Height="50" VerticalAlignment="Center" Visibility="Collapsed" x:Name="StartServicing">
+            <Grid Margin="0,15,0,0" Background="ForestGreen" Width="160" Height="35" VerticalAlignment="Center" Visibility="Collapsed" x:Name="StartServicing">
                 <Button Background="ForestGreen" Click="StartServicing_Click">
                     <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <TextBlock FontSize="16" TextAlignment="Center" Foreground="White">
+                        <TextBlock FontSize="15" TextAlignment="Center" Foreground="White">
                                Начать обслуживание
                         </TextBlock>
                     </WrapPanel>
                 </Button>
             </Grid>
-            <Grid Margin="10,25,0,0" Background="Red" Width="90" Height="50" VerticalAlignment="Center"  x:Name="DidntUp" Visibility="Collapsed">
+            <Grid Margin="10,15,0,0" Background="Red" Width="75" Height="35" VerticalAlignment="Center"  x:Name="DidntUp" Visibility="Collapsed">
                 <Button Background="Red" Click="DidntUp_Click">
                     <WrapPanel  HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <TextBlock FontSize="16" TextAlignment="Center" Foreground="White">
+                        <TextBlock FontSize="15" TextAlignment="Center" Foreground="White">
                              Не явился
                         </TextBlock>
                     </WrapPanel>
@@ -59,11 +71,11 @@
             </Grid>
         </WrapPanel>
 
-        <Grid Grid.Row="2" Width="300">
-            <Grid Margin="0,25,0,0" Background="Brown" Width="300" Height="50" VerticalAlignment="Center">
+        <Grid Grid.Row="2" Width="250">
+            <Grid Margin="0,25,0,0" Background="Brown" Height="35" VerticalAlignment="Center">
                 <Button Background="Brown" Click="Button_Click_1">
                     <WrapPanel Grid.Column="0"  HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <TextBlock FontSize="25" TextAlignment="Center" Foreground="White">
+                        <TextBlock FontSize="20" TextAlignment="Center" Foreground="White">
                           Передать
                         </TextBlock>
                     </WrapPanel>
@@ -71,11 +83,11 @@
             </Grid>
         </Grid>
 
-        <Grid Grid.Row="3" Width="300">
-            <Grid Margin="0,25,0,0" Background="Brown" Width="300" Height="50" VerticalAlignment="Center">
+        <Grid Grid.Row="3" Width="250">
+            <Grid Margin="0,25,0,0" Background="Brown" Height="35" VerticalAlignment="Center">
                 <Button Background="Brown" Click="Button_Click_2">
                     <WrapPanel Grid.Column="0"  HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <TextBlock FontSize="25" TextAlignment="Center" Foreground="White">
+                        <TextBlock FontSize="20" TextAlignment="Center" Foreground="White">
                           Отложить
                         </TextBlock>
                     </WrapPanel>
@@ -83,11 +95,11 @@
             </Grid>
         </Grid>
 
-        <Grid Grid.Row="4" Width="300">
-            <Grid Margin="0,25,0,0" Background="Brown" Width="300" Height="50" VerticalAlignment="Center">
+        <Grid Grid.Row="4" Width="250">
+            <Grid Margin="0,25,0,0" Background="Brown" Height="35" VerticalAlignment="Center">
                 <Button Background="Brown" Click="Button_Click_3">
                     <WrapPanel Grid.Column="0"  HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <TextBlock FontSize="25" TextAlignment="Center" Foreground="White">
+                        <TextBlock FontSize="20" TextAlignment="Center" Foreground="White">
                           Завершить
                         </TextBlock>
                     </WrapPanel>
@@ -95,8 +107,8 @@
             </Grid>
         </Grid>
 
-        <Grid Grid.Row="5" Width="300">
-            <Grid Margin="0,25,0,0" Background="Brown" Width="300" Height="50" VerticalAlignment="Center">
+        <Grid Grid.Row="5" Width="250">
+            <Grid Margin="0,25,0,0" Background="Brown" Height="50" VerticalAlignment="Center">
                 <Button Background="Brown">
                     <WrapPanel Grid.Column="0"  HorizontalAlignment="Center" VerticalAlignment="Center">
                         <TextBlock FontSize="20" TextAlignment="Center" Foreground="White">

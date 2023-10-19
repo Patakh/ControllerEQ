@@ -47,7 +47,7 @@ public static class TicketCall
             return ticket;
         }
         catch (Exception ex)
-        {
+        { 
             return ticket;
         }
     }
