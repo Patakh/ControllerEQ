@@ -8,6 +8,119 @@
         Title="MainWindow" 
         WindowState="Maximized"
         Background="Black">
+    <Window.Resources>
+        <ControlTemplate x:Key="ComboBoxToggleButton" x:Name="ComboBoxToggleButton" TargetType="{x:Type ToggleButton}">
+            <Grid>
+                <Border  Background="Brown"/>
+                <TextBlock Foreground="White" FontSize="16" FontFamily="Arial" Margin="9" x:Name="CountTicket"></TextBlock>
+                <Path Fill="White" VerticalAlignment="Center">
+                    <Path.Data>
+                        <GeometryGroup>
+                            <RectangleGeometry RadiusX="1" RadiusY="1" Rect="5,0,3,1"/>
+                            <RectangleGeometry RadiusX="1" RadiusY="1" Rect="10,0,15,1"/>
+
+                            <RectangleGeometry RadiusX="1" RadiusY="1" Rect="5,5,3,1"/>
+                            <RectangleGeometry RadiusX="1" RadiusY="1" Rect="10,5,15,1"/>
+
+                            <RectangleGeometry RadiusX="1" RadiusY="1" Rect="5,10,3,1"/>
+                            <RectangleGeometry RadiusX="1" RadiusY="1" Rect="10,10,15,1"/>
+
+                            <RectangleGeometry RadiusX="1" RadiusY="1" Rect="5,15,3,1"/>
+                            <RectangleGeometry RadiusX="1" RadiusY="1" Rect="10,15,15,1"/>
+                        </GeometryGroup>
+                    </Path.Data>
+                </Path>
+            </Grid>
+
+        </ControlTemplate>
+
+        <Style x:Key="{x:Type ComboBox}" TargetType="{x:Type ComboBox}">
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
+            <Setter Property="ScrollViewer.CanContentScroll" Value="true"/>
+            <Setter Property="Foreground" Value="White"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ComboBox}">
+                        <Grid>
+                            <ToggleButton 
+                            Name="ToggleButton" 
+                            Template="{DynamicResource ComboBoxToggleButton}" 
+                            Grid.Column="2" 
+                            Focusable="false"
+                            IsChecked="{Binding Path=IsDropDownOpen,Mode=TwoWay,RelativeSource={RelativeSource TemplatedParent}}"
+                            ClickMode="Press">
+                            </ToggleButton>
+
+                            <ContentPresenter Name="ContentSite" IsHitTestVisible="False"  Content="{TemplateBinding SelectionBoxItem}"
+                            ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                            ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                            Margin="3,3,23,3"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Left" />
+                            <TextBox x:Name="PART_EditableTextBox"
+                            Style="{x:Null}"  
+                            HorizontalAlignment="Left" 
+                            VerticalAlignment="Center" 
+                            Margin="3,3,23,3"
+                            Focusable="True" 
+                            Background="Brown"
+                            Foreground="Green"
+                            Visibility="Hidden"
+                            IsReadOnly="{TemplateBinding IsReadOnly}"/>
+                            <Popup 
+                            Name="Popup"
+                            Placement="Bottom"
+                            IsOpen="{TemplateBinding IsDropDownOpen}"
+                            AllowsTransparency="True" 
+                            Focusable="False"
+                            PopupAnimation="Slide">
+
+                                <Grid Name="DropDown"
+                              SnapsToDevicePixels="True"                
+                              MinWidth="{TemplateBinding ActualWidth}"
+                              MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                    <Border 
+                                x:Name="DropDownBorder"
+                                Background="White"
+
+                                BorderThickness="1"
+                                 />
+                                    <ScrollViewer Margin="4,6,4,6" SnapsToDevicePixels="True">
+                                        <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained" />
+                                    </ScrollViewer>
+                                </Grid>
+                            </Popup>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="HasItems" Value="false">
+                                <Setter TargetName="DropDownBorder" Property="MinHeight" Value="95"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Foreground" Value="Brown"/>
+                            </Trigger>
+                            <Trigger Property="IsGrouping" Value="true">
+                                <Setter Property="ScrollViewer.CanContentScroll" Value="false"/>
+                            </Trigger>
+                            <Trigger SourceName="Popup" Property="Popup.AllowsTransparency" Value="true">
+                                <Setter TargetName="DropDownBorder" Property="CornerRadius" Value="0"/>
+                                <Setter TargetName="DropDownBorder" Property="Margin" Value="0,2,0,0"/>
+                            </Trigger>
+                            <Trigger Property="IsEditable"  Value="true">
+                                <Setter Property="IsTabStop" Value="false"/>
+                                <Setter TargetName="PART_EditableTextBox" Property="Visibility" Value="Visible"/>
+                                <Setter TargetName="ContentSite" Property="Visibility" Value="Hidden"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+            </Style.Triggers>
+        </Style>
+
+    </Window.Resources>
     <Grid Margin="20,20,20,20" VerticalAlignment="Center" HorizontalAlignment="Center">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -18,13 +131,14 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Margin="0,15,0,0" Background="#002" Width="250" Height="110">
+        <Grid Grid.Row="0" Margin="0,10,0,0" Background="#002" Width="250" Height="110">
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <WrapPanel Grid.Row="0">
-                <TextBlock FontFamily="Aria" FontSize="25" Foreground="LightYellow" Margin="10,10,10,10" TextWrapping="Wrap">
+                <TextBlock FontFamily="Aria" FontSize="25" Foreground="LightYellow" Margin="10,5,10,3" TextWrapping="Wrap">
                    Окно: 
                     <TextBlock Foreground="#aff" FontSize="20" x:Name="WindowName">
                         ---
@@ -32,7 +146,16 @@
                 </TextBlock>
             </WrapPanel>
             <WrapPanel Grid.Row="1">
-                <TextBlock FontSize="25" Foreground="LightYellow" Margin="10,10,10,10" TextWrapping="Wrap">
+                <TextBlock FontSize="25" Foreground="LightYellow" Margin="10,0,10,3" TextWrapping="Wrap">
+             Всего клиентов:
+             <TextBlock Foreground="#aff" FontSize="20" x:Name="CountClient">
+                  0
+             </TextBlock>
+                  </TextBlock>
+            </WrapPanel>
+
+            <WrapPanel Grid.Row="2">
+                <TextBlock FontSize="25" Foreground="LightYellow" Margin="10,0,10,3" TextWrapping="Wrap">
                     Талон:
                     <TextBlock Foreground="#aff" FontSize="20" x:Name="TicketName">
                         ---
@@ -42,16 +165,18 @@
         </Grid>
 
         <WrapPanel Grid.Row="1" Margin="0,15,0,0" Width="250">
-            <Grid Background="Brown" Width="250" Height="35" VerticalAlignment="Center" x:Name="Call">
-                <Button Background="Brown" Click="Button_Click">
+            <Grid Width="250" Height="40" x:Name="Call">
+                <ComboBox FontSize="16" Width="40" HorizontalAlignment="Left" x:Name="ComboBoxTicketItems">
+                </ComboBox>
+                <Button Background="Brown" Click="Button_Click" Width="220" HorizontalAlignment="Right">
                     <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <TextBlock FontSize="20" TextAlignment="Center" Foreground="White">
+                        <TextBlock FontSize="20" TextAlignment="Center" Foreground="White" Margin="0,0,40,0">
                           Вызвать
                         </TextBlock>
                     </WrapPanel>
                 </Button>
             </Grid>
-            <Grid Margin="0,15,0,0" Background="ForestGreen" Width="160" Height="35" VerticalAlignment="Center" Visibility="Collapsed" x:Name="StartServicing">
+            <Grid Background="ForestGreen" Width="160" Height="40" VerticalAlignment="Center" Visibility="Collapsed" x:Name="StartServicing">
                 <Button Background="ForestGreen" Click="StartServicing_Click">
                     <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                         <TextBlock FontSize="15" TextAlignment="Center" Foreground="White">
@@ -60,7 +185,7 @@
                     </WrapPanel>
                 </Button>
             </Grid>
-            <Grid Margin="10,15,0,0" Background="Red" Width="75" Height="35" VerticalAlignment="Center"  x:Name="DidntUp" Visibility="Collapsed">
+            <Grid Margin="10,0,0,0" Background="Red" Width="75" Height="40" VerticalAlignment="Center"  x:Name="DidntUp" Visibility="Collapsed">
                 <Button Background="Red" Click="DidntUp_Click">
                     <WrapPanel  HorizontalAlignment="Center" VerticalAlignment="Center">
                         <TextBlock FontSize="15" TextAlignment="Center" Foreground="White">
@@ -71,11 +196,16 @@
             </Grid>
         </WrapPanel>
 
-        <Grid Grid.Row="2" Width="250">
-            <Grid Margin="0,25,0,0" Background="Brown" Height="35" VerticalAlignment="Center">
-                <Button Background="Brown" Click="Button_Click_1">
+        <Grid Grid.Row="2" Width="250"> 
+            <Grid Margin="0,25,0,0" Background="Brown" Height="40" VerticalAlignment="Center">
+                <Button Background="Brown" Width="40" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Click="Button_Click_5" >
+                    <TextBlock FontSize="20" Foreground="White" Padding="0" TextAlignment="Left" Margin="0,0,10,0">
+                          ➡
+                    </TextBlock>
+                </Button>
+                <Button Background="Brown" Click="Button_Click_1"  HorizontalAlignment="Right" Width="220">
                     <WrapPanel Grid.Column="0"  HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <TextBlock FontSize="20" TextAlignment="Center" Foreground="White">
+                        <TextBlock FontSize="20" TextAlignment="Center" Foreground="White" Margin="0,0,40,0">
                           Передать
                         </TextBlock>
                     </WrapPanel>
@@ -84,10 +214,15 @@
         </Grid>
 
         <Grid Grid.Row="3" Width="250">
-            <Grid Margin="0,25,0,0" Background="Brown" Height="35" VerticalAlignment="Center">
-                <Button Background="Brown" Click="Button_Click_2">
+            <Grid Margin="0,25,0,0" Background="Brown" Height="40" VerticalAlignment="Center">
+                <Button Background="Brown" Width="40" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Click="Button_Click_6" >
+                    <TextBlock FontSize="20" Foreground="White" Padding="0" TextAlignment="Left" Margin="0,0,10,0">
+                          🔃
+                    </TextBlock>
+                </Button>
+                <Button Background="Brown" Click="Button_Click_2" HorizontalAlignment="Right" Width="220">
                     <WrapPanel Grid.Column="0"  HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <TextBlock FontSize="20" TextAlignment="Center" Foreground="White">
+                        <TextBlock FontSize="20" TextAlignment="Center" Foreground="White" Margin="0,0,40,0">
                           Отложить
                         </TextBlock>
                     </WrapPanel>
@@ -96,7 +231,7 @@
         </Grid>
 
         <Grid Grid.Row="4" Width="250">
-            <Grid Margin="0,25,0,0" Background="Brown" Height="35" VerticalAlignment="Center">
+            <Grid Margin="0,25,0,0" Background="Brown" Height="40" VerticalAlignment="Center">
                 <Button Background="Brown" Click="Button_Click_3">
                     <WrapPanel Grid.Column="0"  HorizontalAlignment="Center" VerticalAlignment="Center">
                         <TextBlock FontSize="20" TextAlignment="Center" Foreground="White">
@@ -108,8 +243,8 @@
         </Grid>
 
         <Grid Grid.Row="5" Width="250">
-            <Grid Margin="0,25,0,0" Background="Brown" Height="50" VerticalAlignment="Center">
-                <Button Background="Brown">
+            <Grid Margin="0,25,0,0" Background="Brown" Height="40" VerticalAlignment="Center">
+                <Button Background="Brown" Click="Button_Click_4">
                     <WrapPanel Grid.Column="0"  HorizontalAlignment="Center" VerticalAlignment="Center">
                         <TextBlock FontSize="20" TextAlignment="Center" Foreground="White">
                           Предварительная запись
