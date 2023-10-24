@@ -5,8 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:СontrollerEQ"
         mc:Ignorable="d"
-        Title="MainWindow" 
-        WindowState="Maximized"
+        Title="MainWindow"  
         Background="Black">
     <Window.Resources>
         <ControlTemplate x:Key="ComboBoxToggleButton" x:Name="ComboBoxToggleButton" TargetType="{x:Type ToggleButton}">
@@ -34,12 +33,7 @@
 
         </ControlTemplate>
 
-        <Style x:Key="{x:Type ComboBox}" TargetType="{x:Type ComboBox}">
-            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
-            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
-            <Setter Property="ScrollViewer.CanContentScroll" Value="true"/>
-            <Setter Property="Foreground" Value="White"/>
-
+        <Style x:Key="{x:Type ComboBox}" TargetType="ComboBox">
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ComboBox}">
@@ -47,8 +41,7 @@
                             <ToggleButton 
                             Name="ToggleButton" 
                             Template="{DynamicResource ComboBoxToggleButton}" 
-                            Grid.Column="2" 
-                            Focusable="false"
+                            Grid.Column="2"
                             IsChecked="{Binding Path=IsDropDownOpen,Mode=TwoWay,RelativeSource={RelativeSource TemplatedParent}}"
                             ClickMode="Press">
                             </ToggleButton>
@@ -59,22 +52,12 @@
                             Margin="3,3,23,3"
                             VerticalAlignment="Center"
                             HorizontalAlignment="Left" />
-                            <TextBox x:Name="PART_EditableTextBox"
-                            Style="{x:Null}"  
-                            HorizontalAlignment="Left" 
-                            VerticalAlignment="Center" 
-                            Margin="3,3,23,3"
-                            Focusable="True" 
-                            Background="Brown"
-                            Foreground="Green"
-                            Visibility="Hidden"
-                            IsReadOnly="{TemplateBinding IsReadOnly}"/>
+
                             <Popup 
                             Name="Popup"
                             Placement="Bottom"
                             IsOpen="{TemplateBinding IsDropDownOpen}"
-                            AllowsTransparency="True" 
-                            Focusable="False"
+                            AllowsTransparency="True"
                             PopupAnimation="Slide">
 
                                 <Grid Name="DropDown"
@@ -83,11 +66,11 @@
                               MaxHeight="{TemplateBinding MaxDropDownHeight}">
                                     <Border 
                                 x:Name="DropDownBorder"
-                                Background="White"
+                                Background="Brown"
 
                                 BorderThickness="1"
                                  />
-                                    <ScrollViewer Margin="4,6,4,6" SnapsToDevicePixels="True">
+                                    <ScrollViewer Margin="1,1,1,1" SnapsToDevicePixels="True">
                                         <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained" />
                                     </ScrollViewer>
                                 </Grid>
@@ -96,28 +79,51 @@
                         <ControlTemplate.Triggers>
                             <Trigger Property="HasItems" Value="false">
                                 <Setter TargetName="DropDownBorder" Property="MinHeight" Value="95"/>
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="false">
-                                <Setter Property="Foreground" Value="Brown"/>
+                                <Setter Property="BorderBrush" Value="Brown"/>
                             </Trigger>
                             <Trigger Property="IsGrouping" Value="true">
                                 <Setter Property="ScrollViewer.CanContentScroll" Value="false"/>
+                                <Setter Property="BorderBrush" Value="Brown"/>
                             </Trigger>
                             <Trigger SourceName="Popup" Property="Popup.AllowsTransparency" Value="true">
                                 <Setter TargetName="DropDownBorder" Property="CornerRadius" Value="0"/>
-                                <Setter TargetName="DropDownBorder" Property="Margin" Value="0,2,0,0"/>
+                                <Setter TargetName="DropDownBorder" Property="Margin" Value="0,0,0,0"/>
+                                <Setter Property="BorderBrush" Value="Brown"/>
                             </Trigger>
-                            <Trigger Property="IsEditable"  Value="true">
+                            <Trigger Property="IsEditable" Value="false">
                                 <Setter Property="IsTabStop" Value="false"/>
-                                <Setter TargetName="PART_EditableTextBox" Property="Visibility" Value="Visible"/>
                                 <Setter TargetName="ContentSite" Property="Visibility" Value="Hidden"/>
+                                <Setter Property="BorderBrush" Value="Brown"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
+            <Style.Resources>
+                <!-- Фон выбранного элемента -->
+                <SolidColorBrush x:Key="SelectedBackgroundBrush" Color="Green"/>
+            </Style.Resources>
             <Style.Triggers>
+                <Trigger Property="IsDropDownOpen" Value="True">
+                    <Setter Property="ItemContainerStyle">
+                        <Setter.Value>
+                            <Style TargetType="ComboBoxItem">
+                                <!-- Установка фона для выбранного элемента -->
+                                <Style.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Background" Value="{StaticResource SelectedBackgroundBrush}"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+
+                <Trigger Property="IsDropDownOpen" Value="False">
+                    <Setter Property="ItemContainerStyle" Value="{x:Null}"/>
+                </Trigger>
             </Style.Triggers>
+
         </Style>
 
     </Window.Resources>
@@ -129,38 +135,42 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Margin="0,10,0,0" Background="#002" Width="250" Height="110">
+        <Grid Grid.Row="0" Margin="0,10,0,0" Background="#002" Width="250" Height="90">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <WrapPanel Grid.Row="0">
-                <TextBlock FontFamily="Aria" FontSize="25" Foreground="LightYellow" Margin="10,5,10,3" TextWrapping="Wrap">
+                <TextBlock FontFamily="Aria" FontSize="18" Foreground="LightYellow" Margin="10,5,10,3" TextWrapping="Wrap">
                    Окно: 
-                    <TextBlock Foreground="#aff" FontSize="20" x:Name="WindowName">
+                    <TextBlock Foreground="#aff" FontSize="18" x:Name="WindowName">
                         ---
                     </TextBlock>
                 </TextBlock>
             </WrapPanel>
             <WrapPanel Grid.Row="1">
-                <TextBlock FontSize="25" Foreground="LightYellow" Margin="10,0,10,3" TextWrapping="Wrap">
+                <TextBlock FontSize="18" Foreground="LightYellow" Margin="10,0,10,3" TextWrapping="Wrap">
              Всего клиентов:
-             <TextBlock Foreground="#aff" FontSize="20" x:Name="CountClient">
+             <TextBlock Foreground="#aff" FontSize="18" x:Name="CountClient">
                   0
              </TextBlock>
                   </TextBlock>
             </WrapPanel>
 
             <WrapPanel Grid.Row="2">
-                <TextBlock FontSize="25" Foreground="LightYellow" Margin="10,0,10,3" TextWrapping="Wrap">
-                    Талон:
-                    <TextBlock Foreground="#aff" FontSize="20" x:Name="TicketName">
+                <Border BorderBrush="AliceBlue">
+                    <TextBlock FontSize="18" Foreground="LightYellow" Margin="10,0,10,3" TextWrapping="Wrap">
+                    Клиент:
+                    <TextBlock Foreground="#aff" FontSize="18" x:Name="TicketName">
                         ---
                     </TextBlock>
                 </TextBlock>
+                </Border>
             </WrapPanel>
         </Grid>
 
@@ -170,7 +180,7 @@
                 </ComboBox>
                 <Button Background="Brown" Click="Button_Click" Width="220" HorizontalAlignment="Right">
                     <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <TextBlock FontSize="20" TextAlignment="Center" Foreground="White" Margin="0,0,40,0">
+                        <TextBlock FontSize="20" TextAlignment="Center" Foreground="White" Margin="0,0,40,0" x:Name="CallTextBlock">
                           Вызвать
                         </TextBlock>
                     </WrapPanel>
@@ -196,16 +206,11 @@
             </Grid>
         </WrapPanel>
 
-        <Grid Grid.Row="2" Width="250"> 
-            <Grid Margin="0,25,0,0" Background="Brown" Height="40" VerticalAlignment="Center">
-                <Button Background="Brown" Width="40" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Click="Button_Click_5" >
-                    <TextBlock FontSize="20" Foreground="White" Padding="0" TextAlignment="Left" Margin="0,0,10,0">
-                          ➡
-                    </TextBlock>
-                </Button>
-                <Button Background="Brown" Click="Button_Click_1"  HorizontalAlignment="Right" Width="220">
+        <Grid Grid.Row="2" Width="250">
+            <Grid Margin="0,25,0,0" Height="40" VerticalAlignment="Center" x:Name="Transfer" Visibility="Collapsed">
+                <Button Background="Brown" Click="Button_Click_1"  HorizontalAlignment="Right" Width="250" x:Name="TransferButton">
                     <WrapPanel Grid.Column="0"  HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <TextBlock FontSize="20" TextAlignment="Center" Foreground="White" Margin="0,0,40,0">
+                        <TextBlock FontSize="20" TextAlignment="Center" Foreground="White" x:Name="TransferTextBlock">
                           Передать
                         </TextBlock>
                     </WrapPanel>
@@ -214,15 +219,10 @@
         </Grid>
 
         <Grid Grid.Row="3" Width="250">
-            <Grid Margin="0,25,0,0" Background="Brown" Height="40" VerticalAlignment="Center">
-                <Button Background="Brown" Width="40" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Click="Button_Click_6" >
-                    <TextBlock FontSize="20" Foreground="White" Padding="0" TextAlignment="Left" Margin="0,0,10,0">
-                          🔃
-                    </TextBlock>
-                </Button>
-                <Button Background="Brown" Click="Button_Click_2" HorizontalAlignment="Right" Width="220">
+            <Grid Margin="0,25,0,0" Height="40" VerticalAlignment="Center" x:Name="Defer" Visibility="Collapsed">
+                <Button Background="Brown" Click="Button_Click_2" HorizontalAlignment="Right" Width="250" x:Name="DeferButton">
                     <WrapPanel Grid.Column="0"  HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <TextBlock FontSize="20" TextAlignment="Center" Foreground="White" Margin="0,0,40,0">
+                        <TextBlock FontSize="20" TextAlignment="Center" Foreground="White"   x:Name="DeferTextBlock">
                           Отложить
                         </TextBlock>
                     </WrapPanel>
@@ -231,7 +231,7 @@
         </Grid>
 
         <Grid Grid.Row="4" Width="250">
-            <Grid Margin="0,25,0,0" Background="Brown" Height="40" VerticalAlignment="Center">
+            <Grid Margin="0,25,0,0" Background="Brown" Height="40" VerticalAlignment="Center" x:Name="Finish" Visibility="Collapsed">
                 <Button Background="Brown" Click="Button_Click_3">
                     <WrapPanel Grid.Column="0"  HorizontalAlignment="Center" VerticalAlignment="Center">
                         <TextBlock FontSize="20" TextAlignment="Center" Foreground="White">
@@ -242,8 +242,31 @@
             </Grid>
         </Grid>
 
+
         <Grid Grid.Row="5" Width="250">
-            <Grid Margin="0,25,0,0" Background="Brown" Height="40" VerticalAlignment="Center">
+            <Grid Margin="0,25,0,0" Background="Brown" Height="40" VerticalAlignment="Center" x:Name="TransferBlockList">
+                <TextBlock  HorizontalAlignment="Center" FontSize="20" Foreground="White" VerticalAlignment="Center">
+                    Переданные  
+                <TextBlock  HorizontalAlignment="Right" FontSize="20" Foreground="LightBlue" VerticalAlignment="Center" x:Name="TransferCount" FontFamily="Arial" Width="20">-</TextBlock>
+                </TextBlock>
+                <ComboBox FontSize="16" Width="250" HorizontalAlignment="Left" x:Name="TransferComboBox" Opacity="0">
+                </ComboBox>
+            </Grid>
+        </Grid>
+
+        <Grid Grid.Row="6" Width="250">
+            <Grid Margin="0,25,0,0" Background="Brown" Height="40" VerticalAlignment="Center" x:Name="DeferBlockList">
+                <TextBlock  FontSize="20" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center"  Opacity="1">
+             Отложенные  
+         <TextBlock  HorizontalAlignment="Right" FontSize="20" Foreground="LightBlue" VerticalAlignment="Center" x:Name="DeferCount" FontFamily="Arial" Width="20">-</TextBlock>
+         </TextBlock>
+                <ComboBox FontSize="16" Width="250" HorizontalAlignment="Center" x:Name="DeferComboBox" Opacity="0">
+                </ComboBox>
+            </Grid>
+        </Grid>
+
+        <Grid Grid.Row="7" Width="250">
+            <Grid Margin="0,25,0,0" Background="Brown" Height="40" VerticalAlignment="Center" x:Name="PreRegistration">
                 <Button Background="Brown" Click="Button_Click_4">
                     <WrapPanel Grid.Column="0"  HorizontalAlignment="Center" VerticalAlignment="Center">
                         <TextBlock FontSize="20" TextAlignment="Center" Foreground="White">

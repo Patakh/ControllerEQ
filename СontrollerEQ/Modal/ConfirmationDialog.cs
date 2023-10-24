@@ -21,7 +21,7 @@ namespace СontrollerEQ.Modal
             Title = "Подтверждение";
             HorizontalAlignment = HorizontalAlignment.Center;
             VerticalAlignment = VerticalAlignment.Center;
-            Width = 255;
+            Width = 300;
             Height = 130;
             AllowDrop = false;
             AllowsTransparency = false;
@@ -36,25 +36,27 @@ namespace СontrollerEQ.Modal
             textBlock.Foreground = new SolidColorBrush(Colors.White);
             textBlock.TextAlignment = TextAlignment.Center;
             textBlock.TextWrapping = TextWrapping.Wrap;
-            textBlock.Margin = new Thickness(10);
-            mainPanel.Children.Add(textBlock);
+            textBlock.Margin = new Thickness(10); 
 
             // Создание панели с кнопками для подтверждения или отмены действия
             WrapPanel buttonPanel = new WrapPanel();
+            buttonPanel.Width = 300;
             buttonPanel.Orientation = Orientation.Horizontal;
+            buttonPanel.HorizontalAlignment = HorizontalAlignment.Center;
+            buttonPanel.Children.Add(textBlock);
 
             Button confirmButton = new Button();
             confirmButton.HorizontalAlignment = HorizontalAlignment.Center;
             confirmButton.VerticalAlignment = VerticalAlignment.Center;
             confirmButton.Height = 30;
-            confirmButton.Width = 100;
-            confirmButton.Margin = new Thickness(32, 18, 0, 0);
+            confirmButton.Width = 120;
+            confirmButton.Margin = new Thickness(20, 18, 0, 0);
             confirmButton.Background = new SolidColorBrush(Colors.Green);
             confirmButton.BorderBrush = new SolidColorBrush(Color.FromRgb(255, 250, 255));
             confirmButton.FontFamily = new FontFamily("Area");
             confirmButton.FontSize = 15;
             confirmButton.Foreground = new SolidColorBrush(Color.FromRgb(252, 252, 240));
-            confirmButton.Content = "Подтвердить";
+            confirmButton.Content = "Подтвердить ✔";
             confirmButton.Margin = new Thickness(10);
             confirmButton.Click += (sender, e) => { DialogResult = true; };
 
@@ -63,14 +65,14 @@ namespace СontrollerEQ.Modal
             cancelButton.VerticalAlignment = VerticalAlignment.Center;
             cancelButton.Height = 30;
             cancelButton.Width = 100;
-            cancelButton.Margin = new Thickness(32, 18, 0, 0);
+            cancelButton.Margin = new Thickness(45, 18, 0, 0);
             cancelButton.Background = new SolidColorBrush(Colors.Red);
             cancelButton.BorderBrush = new SolidColorBrush(Color.FromRgb(255, 250, 255));
             cancelButton.FontFamily = new FontFamily("Area");
             cancelButton.FontSize = 15;
             cancelButton.Foreground = new SolidColorBrush(Color.FromRgb(252, 252, 240));
             cancelButton.Margin = new Thickness(10);
-            cancelButton.Content = "Отмена";
+            cancelButton.Content = "Отмена ❌";
             cancelButton.Click += (sender, e) => { DialogResult = false; };
 
             buttonPanel.Children.Add(confirmButton);

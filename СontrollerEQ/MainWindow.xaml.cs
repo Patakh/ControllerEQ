@@ -22,6 +22,8 @@ using СontrollerEQ.Modal;
 using System.Windows.Media.Effects;
 using System.Runtime.Intrinsics.X86;
 using System.Windows.Controls.Primitives;
+using System.Security.Cryptography.Xml;
+using System.Diagnostics.Metrics;
 
 namespace СontrollerEQ
 {
@@ -33,7 +35,7 @@ namespace СontrollerEQ
         /// <summary>
         /// ip adress компитера
         /// </summary> 
-        public string Ip { get; set; }
+        public static string Ip { get; set; }
 
         /// <summary>
         /// текущий талон
@@ -48,7 +50,7 @@ namespace СontrollerEQ
         }
 
         #region Server
-        public static async Task StartListeningAsync(Window window, string ip)
+        public async Task StartListeningAsync(Window window, string ip)
         {
             TcpListener listener = new TcpListener(IPAddress.Any, 1234);
             listener.Start();
@@ -61,7 +63,7 @@ namespace СontrollerEQ
             }
         }
 
-        private static async Task HandleClientAsync(TcpClient client, Window window, string ip)
+        private async Task HandleClientAsync(TcpClient client, Window window, string ip)
         {
             using (client)
             {
@@ -82,40 +84,15 @@ namespace СontrollerEQ
                 string message = messageBuilder.ToString();
                 if (message == "new Ticket")
                 {
-                    TextBlock ticketName = (TextBlock)window.FindName("TicketName");
-                    EqContext eqContext = new EqContext();
-                    var windows = eqContext.SOfficeWindows.Where(s => s.WindowIp == ip);
-
-                    if (windows.Any())
-                    {
-                        var ticket = GetNextTicket(windows.First().Id);
-                        TicketLive = ticket;
-                        ticketName.Text = TicketLive.TicketNumberFull == null ? "---" : TicketLive.TicketNumberFull;
-                    }
-
-                    var tickets = eqContext.DTickets.Where(s => s.SOfficeId == windows.First().SOfficeId && s.SStatusId == 1 && s.DateRegistration == DateOnly.FromDateTime(DateTime.Now)).OrderBy(r => r.TicketNumber);
-
-                    ComboBox comboBox = (ComboBox)window.FindName("ComboBoxTicketItems");
-                    comboBox.Items.Clear();
-                    if (tickets.Any())
-                    {
-                        tickets.ToList().ForEach(ticket =>
-                        {
-                            ComboBoxItem comboBoxItem = new ComboBoxItem();
-                            comboBoxItem.Content = ticket.TicketNumberFull;
-                            comboBoxItem.IsEnabled = false;
-                            comboBox.Items.Add(comboBoxItem);
-                        });
-                    }
-                    TextBlock countClient = (TextBlock)window.FindName("CountClient");
-                    countClient.Text = tickets.Count().ToString();
+                    Main();
                 }
             }
         }
+
         #endregion
 
         #region Main
-        private async void Main()
+        async void Main()
         {
             try
             {
@@ -130,7 +107,9 @@ namespace СontrollerEQ
                     var ticket = GetNextTicket(window.Id);
                     TicketLive = ticket;
                     TicketName.Text = TicketLive.TicketNumberFull == null ? "---" : TicketLive.TicketNumberFull;
+                    CallTextBlock.Text = TicketLive.TicketNumberFull == null ? "Вызвать ..." : "Вызвать " + TicketLive.TicketNumberFull;
 
+                    #region Все талоны
                     var tickets = eqContext.DTickets.Where(s => s.SOfficeId == window.SOfficeId && s.SStatusId == 1 && s.DateRegistration == DateOnly.FromDateTime(DateTime.Now)).OrderBy(r => r.TicketNumber);
                     ComboBoxTicketItems.Items.Clear();
                     if (tickets.Any())
@@ -138,12 +117,143 @@ namespace СontrollerEQ
                         tickets.ToList().ForEach(ticket =>
                         {
                             ComboBoxItem comboBoxItem = new ComboBoxItem();
-                            comboBoxItem.Content = ticket.TicketNumberFull;
-                            comboBoxItem.IsEnabled = false;
+                            comboBoxItem.Focusable = false;
+
+                            WrapPanel wrapPanelComboBoxItem = new WrapPanel();
+                            wrapPanelComboBoxItem.Orientation = Orientation.Horizontal;
+
+                            TextBlock textBlock = new TextBlock();
+                            textBlock.Text = ticket.TicketNumberFull;
+                            textBlock.FontFamily = new FontFamily("Arial");
+                            textBlock.Width = 35;
+                            textBlock.HorizontalAlignment = HorizontalAlignment.Left;
+                            textBlock.TextAlignment = TextAlignment.Center;
+                            textBlock.VerticalAlignment = VerticalAlignment.Center;
+                            textBlock.Foreground = new SolidColorBrush(Colors.White);
+                            textBlock.Background = new SolidColorBrush(Colors.Black);
+                            textBlock.FontSize = 16;
+
+                            Button button = new Button();
+                            button.Content = "Вызвать 🔊";
+                            button.FontSize = 14;
+                            button.HorizontalAlignment = HorizontalAlignment.Right;
+                            button.Foreground = new SolidColorBrush(Colors.White);
+                            button.FontFamily = new FontFamily("Arial");
+                            button.Background = new SolidColorBrush(Colors.ForestGreen);
+
+                            button.Click += (s, e) =>
+                            {
+                                CallFromList(s, e, ticket);
+                            };
+
+                            wrapPanelComboBoxItem.Children.Add(textBlock);
+                            wrapPanelComboBoxItem.Children.Add(button);
+
+                            comboBoxItem.Content = wrapPanelComboBoxItem;
                             ComboBoxTicketItems.Items.Add(comboBoxItem);
                         });
                     }
                     CountClient.Text = tickets.Count().ToString();
+                    #endregion
+
+                    #region Переданные талоны
+
+                    TransferComboBox.Items.Clear();
+                    var tticketsTransfer = TicketTransferred.SelectTicketTransferred(window.Id); 
+                    TransferCount.Text = tticketsTransfer.Count().ToString();
+                    if (tticketsTransfer.Any())
+                    {
+                        tticketsTransfer.ToList().ForEach(ticketTransfer =>
+                        {
+                            ComboBoxItem comboBoxItem = new ComboBoxItem();
+                            comboBoxItem.Focusable = false;
+
+                            WrapPanel wrapPanelComboBoxItem = new WrapPanel();
+                            wrapPanelComboBoxItem.Orientation = Orientation.Horizontal;
+
+                            TextBlock textBlock = new TextBlock();
+                            textBlock.Text = ticketTransfer.TicketNumberFull;
+                            textBlock.FontFamily = new FontFamily("Arial");
+                            textBlock.Width = 35;
+                            textBlock.HorizontalAlignment = HorizontalAlignment.Left;
+                            textBlock.TextAlignment = TextAlignment.Center;
+                            textBlock.VerticalAlignment = VerticalAlignment.Center;
+                            textBlock.Foreground = new SolidColorBrush(Colors.White);
+                            textBlock.Background = new SolidColorBrush(Colors.Black);
+                            textBlock.FontSize = 16;
+
+                            Button button = new Button();
+                            button.Content = "Вызвать 🔊";
+                            button.FontSize = 14;
+                            button.TabIndex = 1000;
+                            button.HorizontalAlignment = HorizontalAlignment.Right;
+                            button.Foreground = new SolidColorBrush(Colors.White);
+                            button.FontFamily = new FontFamily("Arial");
+                            button.Background = new SolidColorBrush(Colors.ForestGreen);
+
+                            button.Click += (s, e) =>
+                            { 
+                                CallFromList(s, e,new DTicket { Id = ticketTransfer.Id,TicketNumberFull = ticketTransfer.TicketNumberFull });
+                            };
+                             
+
+                            wrapPanelComboBoxItem.Children.Add(textBlock);
+                            wrapPanelComboBoxItem.Children.Add(button);
+
+                            comboBoxItem.Content = wrapPanelComboBoxItem;
+                            TransferComboBox.Items.Add(comboBoxItem);
+                        });
+                    }
+                    #endregion
+
+                    #region Отложенные талоны
+                    DeferComboBox.Items.Clear();
+                    var ticketsPostponed = TicketPostponed.SelectTicketPostponed(window.Id);
+                    DeferCount.Text= ticketsPostponed.Count().ToString();
+                    if (ticketsPostponed.Any())
+                    {
+                        ticketsPostponed.ToList().ForEach(ticketPostponed =>
+                        {
+                            ComboBoxItem comboBoxItem = new ComboBoxItem();
+                            comboBoxItem.Focusable = false;
+
+                            WrapPanel wrapPanelComboBoxItem = new WrapPanel();
+                            wrapPanelComboBoxItem.Orientation = Orientation.Horizontal;
+
+                            TextBlock textBlock = new TextBlock();
+                            textBlock.Text = ticketPostponed.TicketNumberFull;
+                            textBlock.FontFamily = new FontFamily("Arial");
+                            textBlock.Width = 35;
+                            textBlock.HorizontalAlignment = HorizontalAlignment.Left;
+                            textBlock.TextAlignment = TextAlignment.Center;
+                            textBlock.VerticalAlignment = VerticalAlignment.Center;
+                            textBlock.Foreground = new SolidColorBrush(Colors.White);
+                            textBlock.Background = new SolidColorBrush(Colors.Black);
+                            textBlock.FontSize = 16;
+
+                            Button button = new Button();
+                            button.Content = "Вызвать 🔊";
+                            button.FontSize = 14;
+                            button.TabIndex = 1000;
+                            button.HorizontalAlignment = HorizontalAlignment.Right;
+                            button.Foreground = new SolidColorBrush(Colors.White);
+                            button.FontFamily = new FontFamily("Arial");
+                            button.Background = new SolidColorBrush(Colors.ForestGreen);
+
+                            button.Click += (s, e) =>
+                            {
+                                CallFromList(s, e, new DTicket { Id = ticketPostponed.Id, TicketNumberFull = ticketPostponed.TicketNumberFull });
+                            }; 
+                            wrapPanelComboBoxItem.Children.Add(textBlock);
+                            wrapPanelComboBoxItem.Children.Add(button);
+
+                            comboBoxItem.Content = wrapPanelComboBoxItem;
+                            DeferComboBox.Items.Add(comboBoxItem);
+                        });
+                    }
+                     
+                    CountClient.Text = (tticketsTransfer.Count() + tickets.Count()+ ticketsPostponed.Count()).ToString();
+                    #endregion
                     await StartListeningAsync(this, Ip);
                 }
             }
@@ -157,30 +267,74 @@ namespace СontrollerEQ
         #region Вызвать
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            CallOperation(2);
-            Call.Visibility = Visibility.Collapsed;
-            StartServicing.Visibility = Visibility.Visible;
-            DidntUp.Visibility = Visibility.Visible;
+            if (TicketLive.TicketNumberFull != null)
+            {
+                CallOperation(2, TicketLive.Id);
+                TicketName.Text = TicketLive.TicketNumberFull + " Ожидание";
+                StartServicing.Visibility = Visibility.Visible;
+
+                DidntUp.Visibility = Visibility.Visible;
+
+                Call.Visibility = Visibility.Collapsed;
+                PreRegistration.Visibility = Visibility.Collapsed;
+                Transfer.Visibility = Visibility.Collapsed;
+                Defer.Visibility = Visibility.Collapsed;
+                Finish.Visibility = Visibility.Collapsed;
+                TransferBlockList.Visibility = Visibility.Collapsed;
+                DeferBlockList.Visibility = Visibility.Collapsed;
+            }
+        }
+        #endregion
+
+        #region Вызов из списка
+        private void CallFromList(object sender, RoutedEventArgs e, DTicket ticket)
+        {
+            TicketLive.TicketNumberFull = ticket.TicketNumberFull;
+            TicketLive.Id = ticket.Id;
+            if (TicketLive.TicketNumberFull != null)
+            {
+                CallOperation(2, TicketLive.Id);
+                TicketName.Text = TicketLive.TicketNumberFull + " Ожидание";
+                StartServicing.Visibility = Visibility.Visible;
+
+                DidntUp.Visibility = Visibility.Visible;
+
+                Call.Visibility = Visibility.Collapsed;
+                PreRegistration.Visibility = Visibility.Collapsed;
+                Transfer.Visibility = Visibility.Collapsed;
+                Defer.Visibility = Visibility.Collapsed;
+                Finish.Visibility = Visibility.Collapsed;
+                TransferBlockList.Visibility = Visibility.Collapsed;
+                DeferBlockList.Visibility = Visibility.Collapsed;
+            }
         }
         #endregion
 
         #region Начать обслуживание
         private void StartServicing_Click(object sender, RoutedEventArgs e)
         {
+            TicketName.Text = TicketLive.TicketNumberFull + " Обслуживание";
             CallOperation(3, TicketLive.Id);
-            StartServicing.Visibility = Visibility.Collapsed;
+            Finish.Visibility = Visibility.Visible;
+            Transfer.Visibility = Visibility.Visible;
+            Defer.Visibility = Visibility.Visible;
+
             DidntUp.Visibility = Visibility.Collapsed;
-            Call.Visibility = Visibility.Visible;
+            StartServicing.Visibility = Visibility.Collapsed;
         }
         #endregion
 
         #region Не явился
         private void DidntUp_Click(object sender, RoutedEventArgs e)
         {
+            TicketName.Text = TicketLive.TicketNumberFull;
             CallOperation(8, TicketLive.Id);
-            StartServicing.Visibility = Visibility.Collapsed;
-            DidntUp.Visibility = Visibility.Collapsed;
             Call.Visibility = Visibility.Visible;
+            PreRegistration.Visibility = Visibility.Visible; 
+            TransferBlockList.Visibility = Visibility.Visible;
+            DeferBlockList.Visibility = Visibility.Visible; 
+            DidntUp.Visibility = Visibility.Collapsed;
+            StartServicing.Visibility = Visibility.Collapsed;
         }
         #endregion
 
@@ -189,7 +343,6 @@ namespace СontrollerEQ
         {
             StartServicing.Visibility = Visibility.Collapsed;
             DidntUp.Visibility = Visibility.Collapsed;
-            Call.Visibility = Visibility.Visible;
 
             //подключение к базе
             EqContext eqContext = new EqContext();
@@ -231,7 +384,7 @@ namespace СontrollerEQ
                         btnOk.FontFamily = new FontFamily("Area");
                         btnOk.FontSize = 16;
                         btnOk.Foreground = new SolidColorBrush(Color.FromRgb(252, 252, 240));
-                         
+
                         windowResult.ForEach(windowItem =>
                             {
                                 Button btnWindow = new Button();
@@ -256,6 +409,16 @@ namespace СontrollerEQ
                                         CallOperation(4, TicketLive.Id, windowItem.SOfficeWindowId);
                                         Main();
                                         newWindow.Close();
+                                        StartServicing.Visibility = Visibility.Collapsed;
+                                        DidntUp.Visibility = Visibility.Collapsed;
+                                        Finish.Visibility = Visibility.Collapsed;
+                                        Defer.Visibility = Visibility.Collapsed;
+                                        Transfer.Visibility = Visibility.Collapsed;
+
+                                        TransferBlockList.Visibility = Visibility.Visible;
+                                        DeferBlockList.Visibility = Visibility.Visible;
+                                        Call.Visibility = Visibility.Visible;
+                                        PreRegistration.Visibility = Visibility.Visible;
                                     };
                                 };
                                 wrapPanelButtons.Children.Add(btnWindow);
@@ -296,10 +459,6 @@ namespace СontrollerEQ
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
 
-            StartServicing.Visibility = Visibility.Collapsed;
-            DidntUp.Visibility = Visibility.Collapsed;
-            Call.Visibility = Visibility.Visible;
-
             // Создаем и отображаем модальное окно подтверждения
             ConfirmationDialog confirmationDialog = new ConfirmationDialog("Вы уверены, что хотите выполнить это действие?");
             confirmationDialog.Owner = this; // Устанавливаем главное окно владельцем дочернего окна
@@ -318,6 +477,14 @@ namespace СontrollerEQ
             {
                 // Действие подтверждено
                 CallOperation(5, TicketLive.Id);
+                Call.Visibility = Visibility.Visible;
+                PreRegistration.Visibility = Visibility.Visible;
+                TransferBlockList.Visibility = Visibility.Visible;
+                DeferBlockList.Visibility = Visibility.Visible;
+
+                Finish.Visibility = Visibility.Collapsed;
+                Transfer.Visibility = Visibility.Collapsed;
+                Defer.Visibility = Visibility.Collapsed;
                 Main();
             }
             else
@@ -333,7 +500,15 @@ namespace СontrollerEQ
         {
             StartServicing.Visibility = Visibility.Collapsed;
             DidntUp.Visibility = Visibility.Collapsed;
+            Finish.Visibility = Visibility.Collapsed;
+            Defer.Visibility = Visibility.Collapsed;
+            Transfer.Visibility = Visibility.Collapsed;
+
             Call.Visibility = Visibility.Visible;
+            PreRegistration.Visibility = Visibility.Visible;
+            TransferBlockList.Visibility = Visibility.Visible;
+            DeferBlockList.Visibility = Visibility.Visible;
+
             CallOperation(6, TicketLive.Id);
             Main();
         }
@@ -675,7 +850,7 @@ namespace СontrollerEQ
         #endregion
 
         #region дабавление статуса
-        private void CallOperation(int statusId, long ticketId = 0, long idTransferred = 0)
+        public static void CallOperation(int statusId, long ticketId = 0, long idTransferred = 0)
         {
             try
             {
@@ -1037,348 +1212,6 @@ namespace СontrollerEQ
 
             };
         }
-        #endregion
-
-        #region переданые талоны
-        private void Button_Click_5(object sender, RoutedEventArgs e)
-        {
-            // Создание и отображение нового окна
-            Window newWindow = new Window();
-            newWindow.Title = "Список переданных талонов";
-            newWindow.Width = 300;
-            newWindow.Background = new SolidColorBrush(Colors.Black);
-            newWindow.Height = 300;
-            newWindow.Owner = this;
-
-            double left = Left + (Width - newWindow.Width) / 2 + 300;
-            double top = Top + (Height - newWindow.Height) / 2;
-            newWindow.Left = left;
-            newWindow.Top = top;
-
-            WrapPanel wrapPanelTalons = new WrapPanel();
-            wrapPanelTalons.Margin = new Thickness(15);
-            wrapPanelTalons.Orientation = Orientation.Vertical;
-            wrapPanelTalons.HorizontalAlignment = HorizontalAlignment.Center;
-
-            TextBlock textBlock = new TextBlock();
-            textBlock.Text = "Переданные талоны:";
-            textBlock.FontSize = 25;
-            textBlock.Foreground = new SolidColorBrush(Colors.White);
-            textBlock.TextAlignment = TextAlignment.Center;
-            textBlock.Margin = new Thickness(0, 10, 0, 15);
-
-            TextBlock textBlockTalon = new TextBlock();
-            textBlockTalon.FontSize = 16;
-            textBlockTalon.Foreground = new SolidColorBrush(Colors.White);
-            textBlockTalon.TextAlignment = TextAlignment.Center;
-            textBlockTalon.Margin = new Thickness(0, 10, 0, 15);
-
-            ComboBox comboBox = new ComboBox();
-
-
-
-            //подключение к базе
-            EqContext eqContext = new EqContext();
-
-            try
-            {
-                var windows = eqContext.SOfficeWindows.Where(s => s.WindowIp == Ip);
-                if (windows.Any())
-                {
-                    SOfficeWindow sOfficeWindow = windows.First();
-                    TicketTransferred.SelectTicketTransferred(sOfficeWindow.Id).ToList().ForEach(ticketTransfer =>
-                    {
-                        ComboBoxItem comboBoxItem = new ComboBoxItem();
-                        comboBoxItem.Content = ticketTransfer.TicketNumberFull;
-                        comboBoxItem.Tag = ticketTransfer.Id;
-                        comboBox.Items.Add(comboBoxItem);
-                    });
-
-                    Button btnCall = new Button();
-                    btnCall.Content = "Вызвать";
-                    btnCall.HorizontalAlignment = HorizontalAlignment.Center;
-                    btnCall.VerticalAlignment = VerticalAlignment.Center;
-                    btnCall.Height = 40;
-                    btnCall.Width = 250;
-                    btnCall.Margin = new Thickness(0, 10, 0, 10);
-                    btnCall.Background = new SolidColorBrush(Colors.Brown);
-                    btnCall.BorderBrush = new SolidColorBrush(Color.FromRgb(255, 250, 255));
-                    btnCall.FontFamily = new FontFamily("Area");
-                    btnCall.FontSize = 12;
-                    btnCall.Foreground = new SolidColorBrush(Colors.White);
-
-                    Button btnFinish = new Button();
-                    btnFinish.Content = "Завершить";
-                    btnFinish.HorizontalAlignment = HorizontalAlignment.Center;
-                    btnFinish.VerticalAlignment = VerticalAlignment.Center;
-                    btnFinish.Height = 40;
-                    btnFinish.Width = 250;
-                    btnFinish.Margin = new Thickness(0, 10, 0, 10);
-                    btnFinish.Background = new SolidColorBrush(Colors.Brown);
-                    btnFinish.BorderBrush = new SolidColorBrush(Color.FromRgb(255, 250, 255));
-                    btnFinish.FontFamily = new FontFamily("Area");
-                    btnFinish.FontSize = 12;
-                    btnFinish.Foreground = new SolidColorBrush(Colors.White);
-
-                    Button btnProcess = new Button();
-                    btnProcess.Content = "Начать обслуживание";
-                    btnProcess.HorizontalAlignment = HorizontalAlignment.Center;
-                    btnProcess.VerticalAlignment = VerticalAlignment.Center;
-                    btnProcess.Height = 40;
-                    btnProcess.Width = 150;
-                    btnProcess.Margin = new Thickness(0, 10, 0, 10);
-                    btnProcess.Background = new SolidColorBrush(Colors.ForestGreen);
-                    btnProcess.BorderBrush = new SolidColorBrush(Color.FromRgb(255, 250, 255));
-                    btnProcess.FontFamily = new FontFamily("Area");
-                    btnProcess.FontSize = 12;
-                    btnProcess.Foreground = new SolidColorBrush(Colors.White);
-
-                    Button btnDidntUp = new Button();
-                    btnDidntUp.Content = "Не явился";
-                    btnDidntUp.HorizontalAlignment = HorizontalAlignment.Center;
-                    btnDidntUp.VerticalAlignment = VerticalAlignment.Center;
-                    btnDidntUp.Height = 40;
-                    btnDidntUp.Width = 100;
-                    btnDidntUp.Margin = new Thickness(0, 10, 0, 10);
-                    btnDidntUp.Background = new SolidColorBrush(Colors.Red);
-                    btnDidntUp.BorderBrush = new SolidColorBrush(Color.FromRgb(255, 250, 255));
-                    btnDidntUp.FontFamily = new FontFamily("Area");
-                    btnDidntUp.FontSize = 12;
-                    btnDidntUp.Foreground = new SolidColorBrush(Colors.White);
-
-                    WrapPanel wrapPanelbtnDidntUpAndbtnProcess = new WrapPanel();
-                    wrapPanelbtnDidntUpAndbtnProcess.Orientation = Orientation.Horizontal;
-                    wrapPanelbtnDidntUpAndbtnProcess.Children.Add(btnProcess);
-                    wrapPanelbtnDidntUpAndbtnProcess.Children.Add(btnDidntUp);
-                    wrapPanelbtnDidntUpAndbtnProcess.Visibility = Visibility.Collapsed;
-
-                    btnCall.Click += (s, e) =>
-                    {
-                        ComboBoxItem selectedComboBoxItem = comboBox.SelectedItem as ComboBoxItem;
-
-                        if (selectedComboBoxItem != null)
-                        {
-                            long selectedItemContent = Convert.ToInt64(selectedComboBoxItem.Tag.ToString());
-                            CallOperation(1, selectedItemContent);
-                            btnCall.Visibility = Visibility.Collapsed;
-                            wrapPanelbtnDidntUpAndbtnProcess.Visibility = Visibility.Visible;
-
-                            btnProcess.Click += (s, e) =>
-                            {
-                                CallOperation(3, selectedItemContent);
-                                btnCall.Visibility = Visibility.Visible;
-                                wrapPanelbtnDidntUpAndbtnProcess.Visibility = Visibility.Collapsed;
-                            };
-
-                            btnDidntUp.Click += (s, e) =>
-                            {
-                                CallOperation(8, selectedItemContent);
-                                btnCall.Visibility = Visibility.Visible;
-                                wrapPanelbtnDidntUpAndbtnProcess.Visibility = Visibility.Collapsed;
-                            };
-                        }
-                    };
-
-                    btnFinish.Click += (s, e) =>
-                    {
-                        ComboBoxItem selectedComboBoxItem = comboBox.SelectedItem as ComboBoxItem;
-
-                        if (selectedComboBoxItem != null)
-                        {
-                            long selectedItemContent = Convert.ToInt64(selectedComboBoxItem.Tag.ToString());
-                            CallOperation(6, selectedItemContent);
-                            newWindow.Close();
-                            Button_Click_5(s, e);
-                        }
-                    };
-
-                    comboBox.SelectedIndex = 0;
-                    wrapPanelTalons.Children.Add(textBlock);
-                    wrapPanelTalons.Children.Add(comboBox);
-                    wrapPanelTalons.Children.Add(btnCall);
-                    wrapPanelTalons.Children.Add(wrapPanelbtnDidntUpAndbtnProcess);
-                    wrapPanelTalons.Children.Add(btnFinish);
-                    newWindow.Content = wrapPanelTalons;
-                    newWindow.ShowDialog();
-                }
-            }
-            catch (Exception ex)
-            {
-
-            }
-
-        }
-        #endregion
-
-        #region отложенные талоны талоны
-        private void Button_Click_6(object sender, RoutedEventArgs e)
-        {
-            // Создание и отображение нового окна
-            Window newWindow = new Window();
-            newWindow.Title = "Список отложенных талонов";
-            newWindow.Width = 300;
-            newWindow.Background = new SolidColorBrush(Colors.Black);
-            newWindow.Height = 300;
-            newWindow.Owner = this;
-
-            double left = Left + (Width - newWindow.Width) / 2 + 300;
-            double top = Top + (Height - newWindow.Height) / 2;
-            newWindow.Left = left;
-            newWindow.Top = top;
-
-            WrapPanel wrapPanelTalons = new WrapPanel();
-            wrapPanelTalons.Margin = new Thickness(15);
-            wrapPanelTalons.Orientation = Orientation.Vertical;
-            wrapPanelTalons.HorizontalAlignment = HorizontalAlignment.Center;
-
-            TextBlock textBlock = new TextBlock();
-            textBlock.Text = "Отложенные талоны:";
-            textBlock.FontSize = 25;
-            textBlock.Foreground = new SolidColorBrush(Colors.White);
-            textBlock.TextAlignment = TextAlignment.Center;
-            textBlock.Margin = new Thickness(0, 10, 0, 15);
-
-            TextBlock textBlockTalon = new TextBlock();
-            textBlockTalon.FontSize = 16;
-            textBlockTalon.Foreground = new SolidColorBrush(Colors.White);
-            textBlockTalon.TextAlignment = TextAlignment.Center;
-            textBlockTalon.Margin = new Thickness(0, 10, 0, 15);
-
-            ComboBox comboBox = new ComboBox();
-
-
-
-            //подключение к базе
-            EqContext eqContext = new EqContext();
-
-            try
-            {
-                var windows = eqContext.SOfficeWindows.Where(s => s.WindowIp == Ip);
-                if (windows.Any())
-                {
-                    SOfficeWindow sOfficeWindow = windows.First();
-                    TicketPostponed.SelectTicketPostponed(sOfficeWindow.Id).ToList().ForEach(ticketTransfer =>
-                    {
-                        ComboBoxItem comboBoxItem = new ComboBoxItem();
-                        comboBoxItem.Content = ticketTransfer.TicketNumberFull;
-                        comboBoxItem.Tag = ticketTransfer.Id;
-                        comboBox.Items.Add(comboBoxItem);
-                    });
-
-                    Button btnCall = new Button();
-                    btnCall.Content = "Вызвать";
-                    btnCall.HorizontalAlignment = HorizontalAlignment.Center;
-                    btnCall.VerticalAlignment = VerticalAlignment.Center;
-                    btnCall.Height = 40;
-                    btnCall.Width = 250;
-                    btnCall.Margin = new Thickness(0, 10, 0, 10);
-                    btnCall.Background = new SolidColorBrush(Colors.Brown);
-                    btnCall.BorderBrush = new SolidColorBrush(Color.FromRgb(255, 250, 255));
-                    btnCall.FontFamily = new FontFamily("Area");
-                    btnCall.FontSize = 12;
-                    btnCall.Foreground = new SolidColorBrush(Colors.White);
-
-                    Button btnFinish = new Button();
-                    btnFinish.Content = "Завершить";
-                    btnFinish.HorizontalAlignment = HorizontalAlignment.Center;
-                    btnFinish.VerticalAlignment = VerticalAlignment.Center;
-                    btnFinish.Height = 40;
-                    btnFinish.Width = 250;
-                    btnFinish.Margin = new Thickness(0, 10, 0, 10);
-                    btnFinish.Background = new SolidColorBrush(Colors.Brown);
-                    btnFinish.BorderBrush = new SolidColorBrush(Color.FromRgb(255, 250, 255));
-                    btnFinish.FontFamily = new FontFamily("Area");
-                    btnFinish.FontSize = 12;
-                    btnFinish.Foreground = new SolidColorBrush(Colors.White);
-
-                    Button btnProcess = new Button();
-                    btnProcess.Content = "Начать обслуживание";
-                    btnProcess.HorizontalAlignment = HorizontalAlignment.Center;
-                    btnProcess.VerticalAlignment = VerticalAlignment.Center;
-                    btnProcess.Height = 40;
-                    btnProcess.Width = 150;
-                    btnProcess.Margin = new Thickness(0, 10, 0, 10);
-                    btnProcess.Background = new SolidColorBrush(Colors.ForestGreen);
-                    btnProcess.BorderBrush = new SolidColorBrush(Color.FromRgb(255, 250, 255));
-                    btnProcess.FontFamily = new FontFamily("Area");
-                    btnProcess.FontSize = 12;
-                    btnProcess.Foreground = new SolidColorBrush(Colors.White);
-
-                    Button btnDidntUp = new Button();
-                    btnDidntUp.Content = "Не явился";
-                    btnDidntUp.HorizontalAlignment = HorizontalAlignment.Center;
-                    btnDidntUp.VerticalAlignment = VerticalAlignment.Center;
-                    btnDidntUp.Height = 40;
-                    btnDidntUp.Width = 100;
-                    btnDidntUp.Margin = new Thickness(0, 10, 0, 10);
-                    btnDidntUp.Background = new SolidColorBrush(Colors.Red);
-                    btnDidntUp.BorderBrush = new SolidColorBrush(Color.FromRgb(255, 250, 255));
-                    btnDidntUp.FontFamily = new FontFamily("Area");
-                    btnDidntUp.FontSize = 12;
-                    btnDidntUp.Foreground = new SolidColorBrush(Colors.White);
-
-                    WrapPanel wrapPanelbtnDidntUpAndbtnProcess = new WrapPanel();
-                    wrapPanelbtnDidntUpAndbtnProcess.Orientation = Orientation.Horizontal;
-                    wrapPanelbtnDidntUpAndbtnProcess.Children.Add(btnProcess);
-                    wrapPanelbtnDidntUpAndbtnProcess.Children.Add(btnDidntUp);
-                    wrapPanelbtnDidntUpAndbtnProcess.Visibility = Visibility.Collapsed;
-
-                    btnCall.Click += (s, e) =>
-                    {
-                        ComboBoxItem selectedComboBoxItem = comboBox.SelectedItem as ComboBoxItem;
-
-                        if (selectedComboBoxItem != null)
-                        {
-                            long selectedItemContent = Convert.ToInt64(selectedComboBoxItem.Tag.ToString());
-                            CallOperation(1, selectedItemContent);
-                            btnCall.Visibility = Visibility.Collapsed;
-                            wrapPanelbtnDidntUpAndbtnProcess.Visibility = Visibility.Visible;
-
-                            btnProcess.Click += (s, e) =>
-                            {
-                                CallOperation(3, selectedItemContent);
-                                btnCall.Visibility = Visibility.Visible;
-                                wrapPanelbtnDidntUpAndbtnProcess.Visibility = Visibility.Collapsed;
-                            };
-
-                            btnDidntUp.Click += (s, e) =>
-                            {
-                                CallOperation(8, selectedItemContent);
-                                btnCall.Visibility = Visibility.Visible;
-                                wrapPanelbtnDidntUpAndbtnProcess.Visibility = Visibility.Collapsed;
-                            };
-                        }
-                    };
-
-                    btnFinish.Click += (s, e) =>
-                    {
-                        ComboBoxItem selectedComboBoxItem = comboBox.SelectedItem as ComboBoxItem;
-
-                        if (selectedComboBoxItem != null)
-                        {
-                            long selectedItemContent = Convert.ToInt64(selectedComboBoxItem.Tag.ToString());
-                            CallOperation(6, selectedItemContent);
-                            newWindow.Close();
-                            Button_Click_5(s, e);
-                        }
-                    };
-
-                    comboBox.SelectedIndex = 0;
-                    wrapPanelTalons.Children.Add(textBlock);
-                    wrapPanelTalons.Children.Add(comboBox);
-                    wrapPanelTalons.Children.Add(btnCall);
-                    wrapPanelTalons.Children.Add(wrapPanelbtnDidntUpAndbtnProcess);
-                    wrapPanelTalons.Children.Add(btnFinish);
-                    newWindow.Content = wrapPanelTalons;
-                    newWindow.ShowDialog();
-                }
-            }
-            catch (Exception ex)
-            {
-
-            }
-
-        }
-        #endregion
+        #endregion 
     }
 }
