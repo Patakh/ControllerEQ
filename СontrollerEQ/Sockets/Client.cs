@@ -24,7 +24,7 @@ public class Client
                  {
                      using (TcpClient client = new TcpClient())
                      {
-                         await client.ConnectAsync(IPAddress.Parse(x.ScoreboardIp), 1234);
+                         await client.ConnectAsync(IPAddress.Parse(x.ScoreboardIp), 1235);
 
                          using (NetworkStream stream = client.GetStream())
                          {
@@ -35,9 +35,8 @@ public class Client
                  }
                  catch (Exception ex)
                  {
-
-                 }
-
+                   
+                 } 
              });
         }
 

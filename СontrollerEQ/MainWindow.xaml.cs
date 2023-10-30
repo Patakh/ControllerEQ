@@ -34,7 +34,7 @@ namespace СontrollerEQ
     {
         /// <summary>
         /// ip adress компитера
-        /// </summary> 
+        /// </summary>
         public static string Ip { get; set; }
 
         /// <summary>
@@ -49,6 +49,7 @@ namespace СontrollerEQ
             Main();
             Closing += MainWindow_Closing;
         }
+
         #region закритие пиложения
         private async void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
@@ -57,6 +58,7 @@ namespace СontrollerEQ
             await Client.SendMessageAsync("Pocess", Ip); 
         }
         #endregion
+
         #region Server
         public async Task StartListeningAsync(Window window, string ip)
         {
@@ -133,7 +135,7 @@ namespace СontrollerEQ
                             TextBlock textBlock = new TextBlock();
                             textBlock.Text = ticket.TicketNumberFull;
                             textBlock.FontFamily = new FontFamily("Arial");
-                            textBlock.Width = 35;
+                             
                             textBlock.HorizontalAlignment = HorizontalAlignment.Left;
                             textBlock.TextAlignment = TextAlignment.Center;
                             textBlock.VerticalAlignment = VerticalAlignment.Center;
@@ -181,8 +183,7 @@ namespace СontrollerEQ
 
                             TextBlock textBlock = new TextBlock();
                             textBlock.Text = ticketTransfer.TicketNumberFull;
-                            textBlock.FontFamily = new FontFamily("Arial");
-                            textBlock.Width = 35;
+                            textBlock.FontFamily = new FontFamily("Arial"); 
                             textBlock.HorizontalAlignment = HorizontalAlignment.Left;
                             textBlock.TextAlignment = TextAlignment.Center;
                             textBlock.VerticalAlignment = VerticalAlignment.Center;
@@ -230,8 +231,7 @@ namespace СontrollerEQ
 
                             TextBlock textBlock = new TextBlock();
                             textBlock.Text = ticketPostponed.TicketNumberFull;
-                            textBlock.FontFamily = new FontFamily("Arial");
-                            textBlock.Width = 35;
+                            textBlock.FontFamily = new FontFamily("Arial"); 
                             textBlock.HorizontalAlignment = HorizontalAlignment.Left;
                             textBlock.TextAlignment = TextAlignment.Center;
                             textBlock.VerticalAlignment = VerticalAlignment.Center;
@@ -348,6 +348,7 @@ namespace СontrollerEQ
             DeferBlockList.Visibility = Visibility.Visible;
             DidntUp.Visibility = Visibility.Collapsed;
             StartServicing.Visibility = Visibility.Collapsed;
+            Main();
         }
         #endregion
 
