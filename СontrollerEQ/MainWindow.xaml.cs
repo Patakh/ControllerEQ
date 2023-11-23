@@ -47,30 +47,38 @@ namespace СontrollerEQ
             InitializeComponent();
             GetIp();
             Main();
+
             Closing += MainWindow_Closing;
         }
 
         #region закритие пиложения
         private async void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            // Здесь можно разместить код для обработки закрытия приложения 
-            CallOperation(6, TicketLive.Id);
-            await Client.SendMessageAsync("Pocess", Ip); 
+            // Здесь можно разместить код для обработки закрытия приложения
+            if (Call.Visibility == Visibility.Collapsed)
+            {
+                CallOperation(6, TicketLive.Id);
+                await Client.SendMessageAsync("Pocess", Ip);
+            }
         }
         #endregion
 
         #region Server
         public async Task StartListeningAsync(Window window, string ip)
         {
-            TcpListener listener = new TcpListener(IPAddress.Parse(ip), 1234);
-            listener.Start();
-            Console.WriteLine("Сервер запущен. Ожидание подключений...");
-
-            while (true)
+            try
             {
-                TcpClient client = await listener.AcceptTcpClientAsync();
-                _ = HandleClientAsync(client);
-            }
+                TcpListener listener = new TcpListener(IPAddress.Parse(ip), 1234);
+                listener.Start();
+                Console.WriteLine("Сервер запущен. Ожидание подключений...");
+
+                while (true)
+                {
+                    TcpClient client = await listener.AcceptTcpClientAsync();
+                    _ = HandleClientAsync(client);
+                }
+            }catch(Exception ex) { }
+
         }
 
         private async Task HandleClientAsync(TcpClient client)
@@ -102,23 +110,27 @@ namespace СontrollerEQ
         #endregion
 
         #region Main
-        async void Main()
+        void Main()
         {
             try
             {
                 //подключение к базе
                 EqContext eqContext = new EqContext();
                 var windows = eqContext.SOfficeWindows.Where(s => s.WindowIp == Ip);
-
                 if (windows.Any())
                 {
                     var window = windows.First();
                     WindowName.Text = window.WindowName;
                     var ticket = GetNextTicket(window.Id);
-                    TicketLive = ticket;
-                    TicketName.Text = TicketLive.TicketNumberFull == null ? "---" : TicketLive.TicketNumberFull;
-                    CallTextBlock.Text = TicketLive.TicketNumberFull == null ? "Вызвать ..." : "Вызвать " + TicketLive.TicketNumberFull;
 
+                    if (Call.Visibility == Visibility.Visible || TicketLive.TicketNumberFull == null)
+                    {
+                        TicketLive = ticket;
+                        TicketName.Text = TicketLive.TicketNumberFull == null ? "---" : TicketLive.TicketNumberFull;
+                    }
+
+                    CallTextBlock.Text = TicketLive.TicketNumberFull == null ? "Вызвать ..." : "Вызвать " + TicketLive.TicketNumberFull;
+                    CountClient.Text = eqContext.DTickets.Where(s => s.SOfficeId == window.SOfficeId && s.SStatusId != 8 && s.SStatusId != 6 && s.SStatusId != 7 && s.DateRegistration == DateOnly.FromDateTime(DateTime.Now)).Count().ToString();
                     #region Все талоны
                     var tickets = eqContext.DTickets.Where(s => s.SOfficeId == window.SOfficeId && s.SStatusId == 1 && s.DateRegistration == DateOnly.FromDateTime(DateTime.Now)).OrderBy(r => r.TicketNumber);
                     ComboBoxTicketItems.Items.Clear();
@@ -135,7 +147,7 @@ namespace СontrollerEQ
                             TextBlock textBlock = new TextBlock();
                             textBlock.Text = ticket.TicketNumberFull;
                             textBlock.FontFamily = new FontFamily("Arial");
-                             
+
                             textBlock.HorizontalAlignment = HorizontalAlignment.Left;
                             textBlock.TextAlignment = TextAlignment.Center;
                             textBlock.VerticalAlignment = VerticalAlignment.Center;
@@ -162,8 +174,7 @@ namespace СontrollerEQ
                             comboBoxItem.Content = wrapPanelComboBoxItem;
                             ComboBoxTicketItems.Items.Add(comboBoxItem);
                         });
-                    }
-                    CountClient.Text = tickets.Count().ToString();
+                    } 
                     #endregion
 
                     #region Переданные талоны
@@ -183,7 +194,7 @@ namespace СontrollerEQ
 
                             TextBlock textBlock = new TextBlock();
                             textBlock.Text = ticketTransfer.TicketNumberFull;
-                            textBlock.FontFamily = new FontFamily("Arial"); 
+                            textBlock.FontFamily = new FontFamily("Arial");
                             textBlock.HorizontalAlignment = HorizontalAlignment.Left;
                             textBlock.TextAlignment = TextAlignment.Center;
                             textBlock.VerticalAlignment = VerticalAlignment.Center;
@@ -231,7 +242,7 @@ namespace СontrollerEQ
 
                             TextBlock textBlock = new TextBlock();
                             textBlock.Text = ticketPostponed.TicketNumberFull;
-                            textBlock.FontFamily = new FontFamily("Arial"); 
+                            textBlock.FontFamily = new FontFamily("Arial");
                             textBlock.HorizontalAlignment = HorizontalAlignment.Left;
                             textBlock.TextAlignment = TextAlignment.Center;
                             textBlock.VerticalAlignment = VerticalAlignment.Center;
@@ -260,16 +271,13 @@ namespace СontrollerEQ
                         });
                     }
 
-                    CountClient.Text = (tticketsTransfer.Count() + tickets.Count() + ticketsPostponed.Count()).ToString();
                     #endregion
 
-
-                    await StartListeningAsync(this, Ip);
+                     StartListeningAsync(this, Ip);
                 }
             }
             catch (Exception ex)
             {
-
             }
         }
         #endregion
@@ -279,20 +287,20 @@ namespace СontrollerEQ
         {
             if (TicketLive.TicketNumberFull != null)
             {
-                CallOperation(2, TicketLive.Id);
                 TicketName.Text = TicketLive.TicketNumberFull + " Ожидание";
                 StartServicing.Visibility = Visibility.Visible;
-
                 DidntUp.Visibility = Visibility.Visible;
-
                 Call.Visibility = Visibility.Collapsed;
                 PreRegistration.Visibility = Visibility.Collapsed;
                 Transfer.Visibility = Visibility.Collapsed;
                 Defer.Visibility = Visibility.Collapsed;
                 Finish.Visibility = Visibility.Collapsed;
                 TransferBlockList.Visibility = Visibility.Collapsed;
-                DeferBlockList.Visibility = Visibility.Collapsed;
+                DeferBlockList.Visibility = Visibility.Collapsed; 
+                CallOperation(2, TicketLive.Id);
+
                 await Client.SendMessageAsync("Call:" + TicketLive.Id, Ip);
+                await Client.SendMessageAsyncNewTicket("new Ticket", Ip);
             }
         }
         #endregion
@@ -318,6 +326,7 @@ namespace СontrollerEQ
                 TransferBlockList.Visibility = Visibility.Collapsed;
                 DeferBlockList.Visibility = Visibility.Collapsed;
                 await Client.SendMessageAsync("Call:" + TicketLive.Id, Ip);
+                await Client.SendMessageAsyncNewTicket("new Ticket", Ip);
             }
         }
         #endregion
@@ -338,7 +347,7 @@ namespace СontrollerEQ
         #endregion
 
         #region Не явился
-        private void DidntUp_Click(object sender, RoutedEventArgs e)
+        private async void DidntUp_Click(object sender, RoutedEventArgs e)
         {
             TicketName.Text = TicketLive.TicketNumberFull;
             CallOperation(8, TicketLive.Id);
@@ -349,6 +358,7 @@ namespace СontrollerEQ
             DidntUp.Visibility = Visibility.Collapsed;
             StartServicing.Visibility = Visibility.Collapsed;
             Main();
+            await Client.SendMessageAsyncNewTicket("new Ticket", Ip);
         }
         #endregion
 
@@ -421,8 +431,10 @@ namespace СontrollerEQ
                                     btnOk.Click += async (s, e) =>
                                     {
                                         CallOperation(4, TicketLive.Id, windowItem.SOfficeWindowId);
-                                        await Client.SendMessageAsync("Pocess", Ip);
+                                        await Client.SendMessageAsync("Pocess", Ip); 
+                                        TicketLive = new Ticket();
                                         Main();
+                                        await Client.SendMessageAsyncNewTicket("new Ticket", Ip);
                                         newWindow.Close();
                                         StartServicing.Visibility = Visibility.Collapsed;
                                         DidntUp.Visibility = Visibility.Collapsed;
@@ -502,6 +514,7 @@ namespace СontrollerEQ
                 Defer.Visibility = Visibility.Collapsed;
                 await Client.SendMessageAsync("Pocess", Ip);
                 Main();
+                await Client.SendMessageAsyncNewTicket("new Ticket", Ip);
             }
             else
             {
@@ -528,6 +541,7 @@ namespace СontrollerEQ
             CallOperation(6, TicketLive.Id);
             await Client.SendMessageAsync("Pocess", Ip);
             Main();
+            await Client.SendMessageAsyncNewTicket("new Ticket", Ip);
         }
         #endregion
 
