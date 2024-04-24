@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34031.279
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TVQE", "TVQE\TVQE.csproj", "{74673667-62BA-4077-B92C-0C33033DD130}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{74673667-62BA-4077-B92C-0C33033DD130}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74673667-62BA-4077-B92C-0C33033DD130}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74673667-62BA-4077-B92C-0C33033DD130}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74673667-62BA-4077-B92C-0C33033DD130}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2C5BA578-02B8-456B-9A55-0558BEBC9F51}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,9 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="СontrollerEQ.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="connection" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Server=176.113.83.242;User Id=postgres;Password=!ShamiL19;Port=5432;Database=EQ</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

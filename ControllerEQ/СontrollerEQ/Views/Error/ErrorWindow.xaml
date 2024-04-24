@@ -1,0 +1,51 @@
+﻿<Window x:Class="СontrollerEQ.Views.Error.ErrorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        mc:Ignorable="d"
+        Topmost ="True"
+        Title="Ошибка"  
+        ResizeMode="NoResize"
+        AllowDrop = "False"
+        AllowsTransparency = "False"
+        Background = "White"
+        WindowStyle = "None"
+        BorderBrush="Black"
+        BorderThickness="1"
+        WindowStartupLocation="CenterScreen"
+        Height="170"
+        Width="170"
+        >
+    <Grid Height="Auto">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="130"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <ScrollViewer  Grid.Row="0" VerticalScrollBarVisibility="Auto">
+            <TextBlock Text="{Binding MessageError}" Margin="10,20,10,20" FontFamily="Calibri" FontSize="17" TextAlignment="Center" TextWrapping="Wrap" Foreground="Black"/>
+        </ScrollViewer>
+        <StackPanel  Grid.Row="1" >
+            <Button Command="{Binding OkCommand}" Content="Ок" FontSize="14" FontFamily="Calibri"  Background="Green" Foreground="White" Width="100" Height="30">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border  x:Name="border" CornerRadius="5" Background="Green" BorderThickness="1" BorderBrush="Green">
+                            <TextBlock VerticalAlignment="Center" FontSize="15" x:Name="Text" TextAlignment="Center" Foreground="White" FontFamily="Calibri">
+                           Ок
+                            </TextBlock>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="MediumSeaGreen"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Text" Property="Foreground" Value="Green"/>
+                                <Setter TargetName="border" Property="Background" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+        </StackPanel>
+    </Grid>
+</Window>

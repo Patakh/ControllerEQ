@@ -1,0 +1,337 @@
+﻿<Window x:Class="СontrollerEQ.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:СontrollerEQ.Views"
+        mc:Ignorable="d"
+        Title="Пульт"  
+        Background="Transparent"
+        ResizeMode="NoResize"
+        AllowDrop="False"
+        AllowsTransparency="True"
+        WindowStyle="None"
+        Width="200"
+        Height="310"
+        Topmost="True" 
+        WindowStartupLocation="Manual"
+        Left="{Binding Width, ElementName=mainWindow, Converter={local:LeftMarginMainWindow}}"
+        Top="0"
+        x:Name="mainWindow">
+    
+    <Window.Style>
+        <Style TargetType="Window">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Visibility, ElementName=Body}" Value="Visible">
+                    <DataTrigger.Setters>
+                        <Setter Property="BorderThickness" Value="1" />
+                        <Setter Property="BorderBrush" Value="Black" />
+                    </DataTrigger.Setters>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Visibility, ElementName=Body}" Value="Hidden">
+                    <DataTrigger.Setters>
+                        <Setter Property="BorderThickness" Value="0" />
+                        <Setter Property="BorderBrush" Value="White" />
+                    </DataTrigger.Setters>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Style>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions> 
+        <WrapPanel Background="Transparent" Grid.Row="0" HorizontalAlignment="Center">
+            <Button Command="{Binding ShowMainWindowCommand}" Cursor="Hand" Background="LightGray" FontSize="16" FontFamily="Calibri" Height="25">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" CornerRadius="5" Background="Green" BorderThickness="1" BorderBrush="Green">
+                            <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <TextBlock FontSize="16" x:Name="Text" TextAlignment="Center" Foreground="White" FontFamily="Calibri"  Margin="10,2,10,2">
+                                   Очередь
+                                </TextBlock>
+                                <TextBlock FontSize="16" Visibility="{Binding ButtonServingFinishVisibility}" Text="{Binding TimeServising}" TextAlignment="Center" Width="50" Foreground="White" FontWeight="Bold" FontFamily="Calibri" Margin="0,2,10,2"/>
+                            </WrapPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="MediumSeaGreen"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Text" Property="Foreground" Value="Green"/>
+                                <Setter TargetName="border" Property="Background" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+        </WrapPanel>
+
+        <StackPanel Name="Body" Visibility="{Binding BodyVisibility}" Background="White" Grid.Row="1"  Height="380">
+
+            <StackPanel Height="100" Margin="15,0,15,-10">
+                <WrapPanel>
+                    <TextBlock FontSize="20" FontFamily="Calibri" Foreground="Black" TextWrapping="Wrap">
+                        Окно:
+                        <TextBlock Text="{Binding WindowName}" FontSize="16" FontWeight="Bold" FontFamily="Calibri" Foreground="MediumBlue"/>
+                        </TextBlock>
+                </WrapPanel>
+
+                <Grid Background="#002">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="{Binding Cliente}" VerticalAlignment="Center" TextAlignment="Center" Foreground="#aff"  FontWeight="Bold" FontSize="18"/>
+                </Grid>
+
+                <WrapPanel Grid.Row="2">
+                    <TextBlock FontSize="18" FontFamily="Calibri" Foreground="Black" TextWrapping="Wrap">
+                       Всего клиентов:
+                       <TextBlock Text="{Binding CountClientes}" FontSize="16" FontFamily="Calibri"  FontWeight="Bold" Foreground="MediumBlue" />
+                    </TextBlock>
+                </WrapPanel>
+            </StackPanel>
+
+            <Grid Height="30" x:Name="Call" Margin="15,15,15,0" Visibility="{Binding ButtonMainVisibility}" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="35"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+                <Button Command="{Binding ShowListClientsCommand}" Margin="0,0,5,0" Grid.Column="0" Height="30" VerticalAlignment="Center" HorizontalAlignment="Right" Width="30" Cursor="Hand">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="border" CornerRadius="1" >
+                                <Border.Background>
+                                    <ImageBrush ImageSource="/Views/img/list-task.jpg"/>
+                                </Border.Background>
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                    <StackPanel>
+                        <Canvas>
+                            <Border CornerRadius="20" Background="Red"  Canvas.Right="3" Canvas.Top="-22">
+                                <TextBlock Text="{Binding QueueClienteCount}"  FontWeight="Bold" MinWidth="18" Padding="1" FontSize="14" TextAlignment="Center" Foreground="White">
+                                </TextBlock>
+                            </Border>
+                        </Canvas>
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding Call}"  Grid.Column="1"  Cursor="Hand">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="border" CornerRadius="3" Background="Green" BorderThickness="1" BorderBrush="Green">
+                                <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <TextBlock FontSize="16" x:Name="Text" TextAlignment="Center" Foreground="White" FontFamily="Calibri">
+                           Вызвать
+                                    </TextBlock>
+                                </WrapPanel>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="border" Property="Background" Value="MediumSeaGreen"/>
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="Text" Property="Foreground" Value="Green"/>
+                                    <Setter TargetName="border" Property="Background" Value="White"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </Grid>
+
+            <Button Visibility="{Binding ButtonServingVisibility}" Command="{Binding StartServicingCommand}" Height="30" Margin="15,15,15,0" Cursor="Hand">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" CornerRadius="5" Background="ForestGreen" BorderThickness="1" BorderBrush="Green">
+                            <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <TextBlock FontSize="16" x:Name="Text"  FontFamily="Calibri" TextAlignment="Center" Foreground="White">
+                                   Начать обслуживание
+                                </TextBlock>
+                            </WrapPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="MediumSeaGreen"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Text" Property="Foreground" Value="Green"/>
+                                <Setter TargetName="border" Property="Background" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+
+            <Button Visibility="{Binding ButtonServingVisibility}" Command="{Binding BreakServisingCommand}" Height="30" Margin="15,15,15,0" Cursor="Hand">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" CornerRadius="5" Background="Red" BorderThickness="1" BorderBrush="Red">
+                            <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <TextBlock FontSize="16" x:Name="Text"  FontFamily="Calibri" TextAlignment="Center" Foreground="White">
+          Не явился
+                                </TextBlock>
+                            </WrapPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="IndianRed"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Text" Property="Foreground" Value="Red"/>
+                                <Setter TargetName="border" Property="Background" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button> 
+            <Button Visibility="{Binding ButtonServingFinishVisibility}" Command="{Binding TransverServisingCommand}" Height="30" Margin="15,15,15,0" Cursor="Hand">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" CornerRadius="5" Background="Blue" BorderThickness="1" BorderBrush="Blue">
+                            <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <TextBlock FontSize="15" x:Name="Text"  FontFamily="Calibri" TextAlignment="Center" Foreground="White">
+                                   Передать
+                                </TextBlock>
+                            </WrapPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="MediumSlateBlue"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Text" Property="Foreground" Value="Blue"/>
+                                <Setter TargetName="border" Property="Background" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+
+            <Button Visibility="{Binding ButtonServingFinishVisibility}" Command="{Binding DeferServisingCommand}" Background="Brown"  Cursor="Hand" Height="30" Margin="15,15,15,0">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" CornerRadius="5" Background="Brown" BorderThickness="1" BorderBrush="Brown">
+                            <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <TextBlock FontSize="15" x:Name="Text"  FontFamily="Calibri" TextAlignment="Center" Foreground="White">
+                                    Отложить
+                                </TextBlock>
+                            </WrapPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="RosyBrown"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Text" Property="Foreground" Value="Brown"/>
+                                <Setter TargetName="border" Property="Background" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+
+            <Button Visibility="{Binding ButtonServingFinishVisibility}" Command="{Binding StopServisingCommand}"  Margin="15,15,15,0" Cursor="Hand" Height="30"  >
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" CornerRadius="5" Background="Green" BorderThickness="1" BorderBrush="Green">
+                            <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <TextBlock FontSize="15" x:Name="Text"  FontFamily="Calibri" TextAlignment="Center" Foreground="White">
+            Завершить
+                                </TextBlock>
+                            </WrapPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="MediumSeaGreen"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Text" Property="Foreground" Value="Green"/>
+                                <Setter TargetName="border" Property="Background" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+
+            <Button Visibility="{Binding ButtonMainVisibility}"  Command="{Binding ShowListTransverClientsCommand}" Height="30" Margin="15,15,15,0"   Cursor="Hand">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" CornerRadius="3" Background="Blue" BorderThickness="1" BorderBrush="Blue">
+                            <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <TextBlock Name="Text"  HorizontalAlignment="Center" FontSize="16" FontFamily="Calibri" Foreground="White" VerticalAlignment="Center">
+                                   Переданные  
+                                  <TextBlock Text="{Binding MainWindowData.TransferClienteCount}"  FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Center" x:Name="TransferCount"/>
+                               </TextBlock>
+                            </WrapPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="MediumSlateBlue"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Text" Property="Foreground" Value="Blue"/>
+                                <Setter TargetName="border" Property="Background" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+
+            <Button Visibility="{Binding ButtonMainVisibility}" Command="{Binding ShowListDeferClientsCommand}" Height="30"  Margin="15,15,15,0"  Cursor="Hand">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" CornerRadius="3" Background="Brown" BorderThickness="1" BorderBrush="Brown">
+                            <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <TextBlock Name="Text" HorizontalAlignment="Center" FontSize="16" FontFamily="Calibri" Foreground="White" VerticalAlignment="Center">
+                                   Отложенные
+                                  <TextBlock Text="{Binding DeferClienteCount}"  FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Center" x:Name="TransferCount"/>
+                                </TextBlock>
+                            </WrapPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="RosyBrown"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Text" Property="Foreground" Value="Brown"/>
+                                <Setter TargetName="border" Property="Background" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+
+            <Button Command="{Binding PreRegistrationCommand}" Visibility="{Binding ButtonMainVisibility}" Height="30" Margin="15,15,15,0" Background="DimGray" Cursor="Hand">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" CornerRadius="5" Background="Gray" BorderThickness="1" BorderBrush="Gray">
+                            <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <TextBlock FontSize="15" x:Name="Text"  FontFamily="Calibri" TextAlignment="Center" Foreground="White">
+                                    Предварительная запись
+                                </TextBlock>
+                            </WrapPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="LightGray"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Text" Property="Foreground" Value="Gray"/>
+                                <Setter TargetName="border" Property="Background" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+                <WrapPanel Grid.Column="0"  HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock FontSize="16" FontFamily="Calibri" TextAlignment="Center" Foreground="White">
+                        Предварительная запись
+                    </TextBlock>
+                </WrapPanel>
+            </Button>
+        </StackPanel>
+    </Grid>
+</Window>
