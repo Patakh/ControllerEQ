@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel;
 using System.Windows;
-using СontrollerEQ.Command;
+using ControllerEQ.Command;
 
-namespace СontrollerEQ.ViewModel.Error;
+namespace ControllerEQ.ViewModel.Error;
 
 public class ErrorWindowViewModel
 {

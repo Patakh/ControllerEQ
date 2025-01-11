@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace СontrollerEQ.Model.Data.Context;
+namespace ControllerEQ.Model.Data.Context;
  
 public class PreRecord
 {

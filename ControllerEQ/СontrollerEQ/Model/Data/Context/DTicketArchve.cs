@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using СontrollerEQ.Model.Data.Context;
+using ControllerEQ.Model.Data.Context;
 
-namespace СontrollerEQ.Model.Data.Context;
+namespace ControllerEQ.Model.Data.Context;
 
 /// <summary>
 /// Талоны в архиве

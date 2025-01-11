@@ -1,8 +1,8 @@
-﻿namespace СontrollerEQ.Model;
+﻿namespace ControllerEQ.Model;
 static public class Settings
 {
     public static string ConnectionString
     {
-        get => СontrollerEQ.Properties.Settings.Default.connection;
+        get => ControllerEQ.Properties.Settings.Default.connection;
     }
 }

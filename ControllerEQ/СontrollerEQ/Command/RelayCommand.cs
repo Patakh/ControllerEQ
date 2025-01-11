@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Windows.Input;
-namespace СontrollerEQ.Command;
+namespace ControllerEQ.Command;
 public class RelayCommand : ICommand
-{
+{ 
     private Action<object> _execute;
     private Func<object, bool> _canExecute;
 

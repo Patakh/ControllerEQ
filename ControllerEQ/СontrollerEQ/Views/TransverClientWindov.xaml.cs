@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Windows;
-using СontrollerEQ.Model;
-using СontrollerEQ.ViewModel;
+using ControllerEQ.Model;
+using ControllerEQ.ViewModel;
 
-namespace СontrollerEQ.Views; 
+namespace ControllerEQ.Views; 
 public partial class TransverClientWindow : Window
 { 
     public TransverClientWindow(ClientModel client)

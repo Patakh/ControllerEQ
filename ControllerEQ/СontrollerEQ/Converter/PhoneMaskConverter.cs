@@ -5,7 +5,7 @@ using System.Text;
 using System.Windows.Data;
 using System.Windows.Markup;
 
-namespace СontrollerEQ.Views;
+namespace ControllerEQ.Views;
 
 public class PhoneMaskConverter : MarkupExtension, IValueConverter
 {

@@ -1,12 +1,12 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
-using СontrollerEQ.Command;
-using СontrollerEQ.Model;
-using СontrollerEQ.Model.Data;
-using СontrollerEQ.Views;
+using ControllerEQ.Command;
+using ControllerEQ.Model;
+using ControllerEQ.Model.Data;
+using ControllerEQ.Views;
 
-namespace СontrollerEQ.ViewModel;
+namespace ControllerEQ.ViewModel;
 class ClientListViewModel : INotifyPropertyChanged
 {
     private ClientListWindow _window;

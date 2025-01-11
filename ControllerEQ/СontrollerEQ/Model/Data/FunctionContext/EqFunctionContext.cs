@@ -4,7 +4,7 @@ using System;
 using System.Data;
 using System.Threading.Tasks;
 
-namespace СontrollerEQ.Model.Data.Context;
+namespace ControllerEQ.Model.Data.Context;
 
 public partial class EqContext
 {

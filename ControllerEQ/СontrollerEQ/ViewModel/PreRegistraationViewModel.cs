@@ -4,12 +4,12 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Media;
-using СontrollerEQ.Command;
-using СontrollerEQ.Model;
-using СontrollerEQ.Model.Data;
-using СontrollerEQ.Model.Data.Context;
+using ControllerEQ.Command;
+using ControllerEQ.Model;
+using ControllerEQ.Model.Data;
+using ControllerEQ.Model.Data.Context;
 
-namespace СontrollerEQ.ViewModel;
+namespace ControllerEQ.ViewModel;
 class PreRegistraationViewModel : INotifyPropertyChanged
 {
     private PreRegistraationModel _preRegModel = new();
@@ -165,7 +165,7 @@ class PreRegistraationViewModel : INotifyPropertyChanged
             NotifyPropertyChanged("DateList");
         }
     }
-    public ObservableCollection<PreRegistraationTime> TimeList
+    public ObservableCollection<PreRegistrationTime> TimeList
     {
         get => _preRegModel.TimeList;
         set
@@ -183,11 +183,11 @@ class PreRegistraationViewModel : INotifyPropertyChanged
                     foreach (var _item in _preRegModel.TimeList)
                     {
                         _item.ButtonBackground = new SolidColorBrush(Colors.Blue);
-                        _item.ButtonForground = new SolidColorBrush(Colors.White);
+                        _item.ButtonForeground = new SolidColorBrush(Colors.White);
                     }
 
                     item.ButtonBackground = new SolidColorBrush(Colors.White);
-                    item.ButtonForground = new SolidColorBrush(Colors.Blue);
+                    item.ButtonForeground = new SolidColorBrush(Colors.Blue);
 
                     BackClickEvent += (s, e) =>
                     {

@@ -1,4 +1,4 @@
-﻿namespace СontrollerEQ.Model;
+﻿namespace ControllerEQ.Model;
 
 public enum Status
 {

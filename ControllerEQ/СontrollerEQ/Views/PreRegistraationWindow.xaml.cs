@@ -1,29 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ControllerEQ.ViewModel;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using СontrollerEQ.ViewModel;
 
-namespace СontrollerEQ.Views
+namespace ControllerEQ.Views;
+
+/// <summary>
+/// Логика взаимодействия для PreRegistrationWindow.xaml
+/// </summary>
+public partial class PreRegistrationWindow : Window
 {
-    /// <summary>
-    /// Логика взаимодействия для PreRegistraationWindow.xaml
-    /// </summary>
-    public partial class PreRegistraationWindow : Window
+    public PreRegistrationWindow()
     {
-        public PreRegistraationWindow()
-        {
-            InitializeComponent();
-            DataContext = new PreRegistraationViewModel(this);
-        }
+        InitializeComponent();
+        DataContext = new PreRegistraationViewModel(this);
     }
 }

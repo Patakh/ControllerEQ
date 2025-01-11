@@ -7,9 +7,9 @@ using System.Data;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using СontrollerEQ.Model.Data.Context;
+using ControllerEQ.Model.Data.Context;
 
-namespace СontrollerEQ.Model.Data;
+namespace ControllerEQ.Model.Data;
 
 static class DataWorker
 {
@@ -41,10 +41,10 @@ static class DataWorker
         var ticketsTransferCount = TicketTransferred.SelectTicketTransferredtAsync(Window.Id).Result;
         var ticketsPostponed = TicketPostponed.SelectTicketPostponedAsync(Window.Id).Result;
 
-        mainWindowModel.IpAdress = Window.WindowIp;
+        mainWindowModel.IpAddress = Window.WindowIp;
         mainWindowModel.WindowId = Window.Id;
         mainWindowModel.WindowsName = Window.WindowName;
-        mainWindowModel.CountClientes = _context.DTickets.AsNoTracking().Where(s =>
+        mainWindowModel.CountClients = _context.DTickets.AsNoTracking().Where(s =>
         s.SOfficeId == Window.SOfficeId
         && s.SStatusId != (int)Status.NeverShowed
         && s.SStatusId != (int)Status.Completed
@@ -52,11 +52,11 @@ static class DataWorker
             .Count()
             .ToString();
 
-        mainWindowModel.QueueClienteCount = GetClientListCount();
-        mainWindowModel.ClienteId = ticket.Id;
-        mainWindowModel.Cliente = ticket.TicketNumberFull == null ? "---" : ticket.TicketNumberFull;
-        mainWindowModel.TransferClienteCount = ticketsTransferCount.Count.ToString() == "0" ? "-" : ticketsTransferCount.Count.ToString();
-        mainWindowModel.DeferClienteCount = ticketsPostponed.Count.ToString() == "0" ? "-" : ticketsPostponed.Count.ToString();
+        mainWindowModel.QueueClientsCount = GetClientListCount();
+        mainWindowModel.ClientId = ticket.Id;
+        mainWindowModel.Client = ticket.TicketNumberFull == null ? "---" : ticket.TicketNumberFull;
+        mainWindowModel.TransferClientsCount = ticketsTransferCount.Count.ToString() == "0" ? "-" : ticketsTransferCount.Count.ToString();
+        mainWindowModel.DeferClientsCount = ticketsPostponed.Count.ToString() == "0" ? "-" : ticketsPostponed.Count.ToString();
 
         return mainWindowModel;
     }
@@ -97,10 +97,12 @@ static class DataWorker
     }
     public static ObservableCollection<ClientModel> GetClientNewListData()
     {
+        var servicesId = _context.SOfficeWindowServices.AsNoTracking().Where(w=>w.SOfficeWindowId== Window.Id).Select(s=>s.SServiceId).ToList();
         var tickets = _context.DTickets.AsNoTracking().Where(s =>
         s.SOfficeId == Window.SOfficeId
         && s.SOfficeWindowId == null
         && s.SStatusId == 1
+        && servicesId.Contains(s.SServiceId)
         && s.DateRegistration == DateOnly.FromDateTime(DateTime.Now)).OrderBy(r => r.TicketNumber).ToList();
 
         var clientList = new ObservableCollection<ClientModel>();
@@ -119,10 +121,12 @@ static class DataWorker
     }
     public static string? GetClientListCount()
     {
+        var servicesId = _context.SOfficeWindowServices.AsNoTracking().Where(w => w.SOfficeWindowId == Window.Id).Select(s => s.SServiceId).ToList();
         var count = _context.DTickets.AsNoTracking().Where(s =>
-       s.SOfficeId == Window.SOfficeId
-       && s.SStatusId == 1
-       && s.DateRegistration == DateOnly.FromDateTime(DateTime.Now)).OrderBy(r => r.TicketNumber).Count();
+           s.SOfficeId == Window.SOfficeId
+           && s.SStatusId == 1
+           && servicesId.Contains(s.SServiceId)
+           && s.DateRegistration == DateOnly.FromDateTime(DateTime.Now)).OrderBy(r => r.TicketNumber).Count();
         return count.ToString();
     }
     public static async Task CallOperation(long ticketId, Status status, long? idWindowTransfer = null)
@@ -171,12 +175,12 @@ static class DataWorker
             {
                 Date = item.Date,
                 DayName = item.DayName,
-                PreRegistraationTimes = new ObservableCollection<PreRegistraationTime>()
+                PreRegistraationTimes = new ObservableCollection<PreRegistrationTime>()
             };
 
             item.Time.ForEach(x =>
             {
-                var preRegistrTime = new PreRegistraationTime
+                var preRegistrTime = new PreRegistrationTime
                 {
                     StartTimePrerecord = x.StartTimePrerecord,
                     StopTimePrerecord = x.StopTimePrerecord,

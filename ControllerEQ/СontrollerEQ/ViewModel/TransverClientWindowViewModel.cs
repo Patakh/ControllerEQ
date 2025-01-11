@@ -3,17 +3,17 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Media;
-using СontrollerEQ.Command;
-using СontrollerEQ.Model;
-using СontrollerEQ.Model.Data;
-using СontrollerEQ.Views;
+using ControllerEQ.Command;
+using ControllerEQ.Model;
+using ControllerEQ.Model.Data;
+using ControllerEQ.Views;
 
-namespace СontrollerEQ.ViewModel;
+namespace ControllerEQ.ViewModel;
 public class TransverClientWindowViewModel : INotifyPropertyChanged
 {
     private long _sendWindowId;
     private bool _isSend = false;
-    private ObservableCollection<TransverClientWindowModel> _buttonTransver;
+    private ObservableCollection<TransferClientWindowModel> _buttonTransver;
     private Window _window;
     private ClientModel _client;
     private Visibility _visibilitySend;
@@ -49,7 +49,7 @@ public class TransverClientWindowViewModel : INotifyPropertyChanged
         }
     }
 
-    public ObservableCollection<TransverClientWindowModel> ButtonTransver
+    public ObservableCollection<TransferClientWindowModel> ButtonTransver
     {
         get => _buttonTransver;
         set

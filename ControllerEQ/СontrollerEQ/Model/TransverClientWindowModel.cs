@@ -1,9 +1,9 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Windows.Media;
-using СontrollerEQ.Command;
-namespace СontrollerEQ.Model;
-public class TransverClientWindowModel : INotifyPropertyChanged
+using ControllerEQ.Command;
+namespace ControllerEQ.Model;
+public class TransferClientWindowModel : INotifyPropertyChanged
 {
     public long WindowId { get; set; }
     public string WindowName { get; set; }
@@ -27,7 +27,7 @@ public class TransverClientWindowModel : INotifyPropertyChanged
         set
         {
             _windowForground = value;
-            NotifyPropertyChanged("WindowForground");
+            NotifyPropertyChanged("WindowForeground");
         }
     }  
      

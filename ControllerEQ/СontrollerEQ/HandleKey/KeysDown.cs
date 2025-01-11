@@ -1,5 +1,5 @@
 ﻿using System.Windows.Input; 
-namespace СontrollerEQ.HandleKey;
+namespace ControllerEQ.HandleKey;
 public class KeysDown
 {
     public static void Press(KeyEventArgs keyEvent)
@@ -7,7 +7,7 @@ public class KeysDown
         switch (keyEvent.Key)
         {
             case Key.F1:
-                App.ChangeConnectionStrring();
+                App.ChangeConnectionString();
                 break;
             case Key.F2:
                 App.Restart();

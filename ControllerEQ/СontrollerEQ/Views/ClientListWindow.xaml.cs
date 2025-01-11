@@ -1,9 +1,9 @@
 ﻿using System.Windows;
-using СontrollerEQ.Model;
-using СontrollerEQ.ViewModel;
-using static СontrollerEQ.ViewModel.ClientListViewModel;
+using ControllerEQ.Model;
+using ControllerEQ.ViewModel;
+using static ControllerEQ.ViewModel.ClientListViewModel;
 
-namespace СontrollerEQ.Views;
+namespace ControllerEQ.Views;
 /// <summary>
 /// Логика взаимодействия для ClientList.xaml
 /// </summary>

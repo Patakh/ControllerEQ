@@ -4,7 +4,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
-using СontrollerEQ.Model.Data;
+using ControllerEQ.Model.Data;
 
 public class Client
 {
@@ -12,7 +12,7 @@ public class Client
     {
         try
         {
-            var scoreboards = DataWorker.GetOfficeScoreboards(); 
+            var scoreboards = DataWorker.GetOfficeScoreboards();
             if (scoreboards.Any())
             {
                 scoreboards.ToList().ForEach(async x =>
@@ -20,62 +20,56 @@ public class Client
                      // Подключение к серверу Табло
                      try
                      {
-                         using (TcpClient client = new())
-                         {
-                             await client.ConnectAsync(IPAddress.Parse(x.ScoreboardIp), 1235);
+                         using TcpClient client = new();
+                         await client.ConnectAsync(IPAddress.Parse(x.ScoreboardIp), 1235);
 
-                             using (NetworkStream stream = client.GetStream())
-                             {
-                                 byte[] buffer = Encoding.UTF8.GetBytes(message);
-                                 await stream.WriteAsync(buffer, 0, buffer.Length);
-                             }
-                         }
+                         using NetworkStream stream = client.GetStream();
+                         byte[] buffer = Encoding.UTF8.GetBytes(message);
+                         await stream.WriteAsync(buffer, 0, buffer.Length);
                      }
-                     catch (Exception ex)
-                     { 
-                     }
+                     catch { }
                  });
+            }
+
+            if (!string.IsNullOrEmpty(DataWorker.Window.ElectronicScoreboardIp))
+            {
+                // Подключение к серверу Табло над оператором
+                try
+                {
+                    using TcpClient client = new();
+                    await client.ConnectAsync(IPAddress.Parse(DataWorker.Window.ElectronicScoreboardIp), 1236);
+
+                    using NetworkStream stream = client.GetStream();
+                    byte[] buffer = Encoding.UTF8.GetBytes(message);
+                    await stream.WriteAsync(buffer, 0, buffer.Length);
+                }
+                catch { }
             }
         }
         catch (Exception ex)
         {
-
         }
     }
 
     public static async Task SendMessageAsyncNewTicket(string message)
     {
-        try
+        var windows = DataWorker.GetOfficeWindows();
+        if (windows.Any())
         {
-            var windows = DataWorker.GetOfficeWindows();
-            if (windows.Any())
+            windows.ToList().ForEach(async x =>
             {
-                windows.ToList().ForEach(async x =>
+                // Подключение к серверу Терминала и к Окнам
+                try
                 {
-                    // Подключение к серверу Терминала и к Окнам
-                    try
-                    {
-                        using (TcpClient client = new())
-                        {
-                            await client.ConnectAsync(IPAddress.Parse(x.WindowIp), 1234);
+                    using TcpClient client = new();
+                    await client.ConnectAsync(IPAddress.Parse(x.WindowIp), 1234);
 
-                            using (NetworkStream stream = client.GetStream())
-                            {
-                                byte[] buffer = Encoding.UTF8.GetBytes(message);
-                                await stream.WriteAsync(buffer, 0, buffer.Length);
-                            }
-                        }
-                    }
-                    catch 
-                    {
-
-                    }
-                });
-            }
-        }
-        catch 
-        {
-
+                    using NetworkStream stream = client.GetStream();
+                    byte[] buffer = Encoding.UTF8.GetBytes(message);
+                    await stream.WriteAsync(buffer, 0, buffer.Length);
+                }
+                catch { }
+            });
         }
     }
 }

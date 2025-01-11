@@ -1,7 +1,7 @@
 ﻿using System.Windows; 
-using СontrollerEQ.HandleKey;
-using СontrollerEQ.ViewModel.Error;
-namespace СontrollerEQ.Views.Error;
+using ControllerEQ.HandleKey;
+using ControllerEQ.ViewModel.Error;
+namespace ControllerEQ.Views.Error;
 
 /// <summary>
 /// Логика взаимодействия для ConfirmationDialogWindow.xaml

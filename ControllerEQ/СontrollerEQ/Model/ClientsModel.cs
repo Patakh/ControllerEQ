@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
-using СontrollerEQ.Command;
-using СontrollerEQ.Model.Data;
+using ControllerEQ.Command;
+using ControllerEQ.Model.Data;
 
-namespace СontrollerEQ.Model;
+namespace ControllerEQ.Model;
 
 public class ClientModel
 {
@@ -33,19 +33,19 @@ public class ClientModel
         await Client.SendMessageAsyncNewTicket("new Ticket");
     }
 
-    public async Task StartServising()
+    public async Task StartServicing()
     {
         await DataWorker.CallOperation(Id, Status.Serviced);
-        await Client.SendMessageAsync("Pocess");
+        await Client.SendMessageAsync("Process");
     }
 
-    public async Task BreakServising()
+    public async Task BreakServicing()
     {
         await DataWorker.CallOperation(Id, Status.NeverShowed);
         await RefreshMessage();
     }
 
-    public async Task DeferServising()
+    public async Task DeferServicing()
     {
         await DataWorker.CallOperation(Id, Status.Defer);
         await RefreshMessage();
@@ -57,7 +57,7 @@ public class ClientModel
         await RefreshMessage();
     }
 
-    public async Task StopServising()
+    public async Task StopServicing()
     {
         await DataWorker.CallOperation(Id, Status.Completed);
         await RefreshMessage();
@@ -65,7 +65,7 @@ public class ClientModel
 
     public async Task RefreshMessage()
     {
-        await Client.SendMessageAsync("Pocess");
+        await Client.SendMessageAsync("Process");
         await Client.SendMessageAsyncNewTicket("new Ticket");
     }
 }

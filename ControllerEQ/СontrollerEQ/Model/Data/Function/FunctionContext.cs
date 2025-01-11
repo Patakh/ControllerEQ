@@ -6,8 +6,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Threading.Tasks;
-using СontrollerEQ.Model;
-using СontrollerEQ.Model.Data.Context;
+using ControllerEQ.Model;
+using ControllerEQ.Model.Data.Context;
 namespace Function;
 
 public static class TicketCall
@@ -51,9 +51,9 @@ public static class TicketCall
         }
     }
 
-    public static ObservableCollection<TransverClientWindowModel> WindowResult(long id)
+    public static ObservableCollection<TransferClientWindowModel> WindowResult(long id)
     {
-        ObservableCollection<TransverClientWindowModel> result = new();
+        ObservableCollection<TransferClientWindowModel> result = new();
         try
         {
             using (var connection = new NpgsqlConnection(Settings.ConnectionString))
@@ -66,7 +66,7 @@ public static class TicketCall
                     {
                         while (reader.Read())
                         {
-                            var Selectresult = new TransverClientWindowModel
+                            var Selectresult = new TransferClientWindowModel
                             {
                                 WindowId = (long)reader["out_s_office_window_id"],
                                 WindowName = (string)reader["out_window_name"]

@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Markup;
 
-namespace СontrollerEQ.Views;
+namespace ControllerEQ.Views;
 [ValueConversion(typeof(double), typeof(double))]
 public class LeftMarginMainWindow : MarkupExtension, IValueConverter
 {

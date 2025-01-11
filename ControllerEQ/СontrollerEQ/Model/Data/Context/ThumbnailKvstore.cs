@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace СontrollerEQ.Model.Data.Context;
+namespace ControllerEQ.Model.Data.Context;
 
 public partial class ThumbnailKvstore
 {

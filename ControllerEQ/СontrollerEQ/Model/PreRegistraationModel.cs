@@ -3,9 +3,9 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Media;
-using СontrollerEQ.Command;
+using ControllerEQ.Command;
 
-namespace СontrollerEQ.Model;
+namespace ControllerEQ.Model;
 public class PreRegistraationModel
 {
     public string Fio;
@@ -18,7 +18,7 @@ public class PreRegistraationModel
     public TimeSpan TimeStop;
     public Window Window;
     public ObservableCollection<PreRegistraationDate> DateList;
-    public ObservableCollection<PreRegistraationTime> TimeList;
+    public ObservableCollection<PreRegistrationTime> TimeList;
     public Visibility VisibilityDate;
     public Visibility VisibilityTime;
     public Visibility VisibilityBack;
@@ -47,7 +47,7 @@ public class PreRegistraationDate : INotifyPropertyChanged
     public TimeSpan StartTimePrerecord { get; set; }
     public TimeSpan StopTimePrerecord { get; set; }
     public Brush _buttonBackground  = new SolidColorBrush(Colors.Blue);
-    public Brush _buttonForground = new SolidColorBrush(Colors.White);
+    public Brush _buttonForeground = new SolidColorBrush(Colors.White);
     public Brush ButtonBackground
     {
         get => _buttonBackground;
@@ -59,14 +59,14 @@ public class PreRegistraationDate : INotifyPropertyChanged
     }
     public Brush ButtonForground
     {
-        get => _buttonForground;
+        get => _buttonForeground;
         set
         {
-            _buttonForground = value;
-            NotifyPropertyChanged("ButtonForground");
+            _buttonForeground = value;
+            NotifyPropertyChanged("ButtonForeground");
         }
     }
-    public ObservableCollection<PreRegistraationTime> PreRegistraationTimes { get; set; }
+    public ObservableCollection<PreRegistrationTime> PreRegistraationTimes { get; set; }
     public event EventHandler ClickEvent;
     public RelayCommand ButtonClickCommand
     {
@@ -90,12 +90,12 @@ public class PreRegistraationDate : INotifyPropertyChanged
     }
 }
 
-public class PreRegistraationTime:INotifyPropertyChanged
+public class PreRegistrationTime:INotifyPropertyChanged
 {
     public TimeSpan StartTimePrerecord { get; set; }
     public TimeSpan StopTimePrerecord { get; set; }
     public Brush _buttonBackground = new SolidColorBrush(Colors.Blue);
-    public Brush _buttonForground = new SolidColorBrush(Colors.White);
+    public Brush _buttonForeground = new SolidColorBrush(Colors.White);
     public Brush ButtonBackground
     {
         get => _buttonBackground;
@@ -105,13 +105,13 @@ public class PreRegistraationTime:INotifyPropertyChanged
             NotifyPropertyChanged("ButtonBackground");
         }
     }
-    public Brush ButtonForground
+    public Brush ButtonForeground
     {
-        get => _buttonForground;
+        get => _buttonForeground;
         set
         {
-            _buttonForground = value;
-            NotifyPropertyChanged("ButtonForground");
+            _buttonForeground = value;
+            NotifyPropertyChanged("ButtonForeground");
         }
     }
 

@@ -1,36 +1,36 @@
-﻿using System;
+﻿using ControllerEQ.Command;
+using ControllerEQ.Model;
+using ControllerEQ.Model.Data;
+using ControllerEQ.Views;
+using ControllerEQ.Views.Modal;
+using System;
 using System.ComponentModel;
-using System.Net.Sockets;
 using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using СontrollerEQ.Model;
-using СontrollerEQ.Views;
-using СontrollerEQ.Model.Data;
-using СontrollerEQ.Views.Modal;
 using System.Windows.Threading;
-using СontrollerEQ.Command;
 
-namespace СontrollerEQ.ViewModel;
+namespace ControllerEQ.ViewModel;
 
 public class MainWindowViewModel : INotifyPropertyChanged
 {
     private MainWindowModel _model;
 
-    public event EventHandler StartServisingEvent;
-    public event EventHandler BreakServisingEvent;
-    public event EventHandler StopServisingEvent;
-    public event EventHandler TransverServisingEvent;
-    public event EventHandler DeferServisingEvent;
+    public event EventHandler StartServicingEvent;
+    public event EventHandler BreakServicingEvent;
+    public event EventHandler StopServicingEvent;
+    public event EventHandler TransversServicingEvent;
+    public event EventHandler DeferServicingEvent;
 
-    public string TimeServising
+    public string TimeServicing
     {
-        get => _model.TimeServising;
+        get => _model.TimeServicing;
         set
         {
-            _model.TimeServising = value;
-            NotifyPropertyChanged("TimeServising");
+            _model.TimeServicing = value;
+            NotifyPropertyChanged(nameof(TimeServicing));
         }
     }
     public MainWindowViewModel()
@@ -38,7 +38,7 @@ public class MainWindowViewModel : INotifyPropertyChanged
         _model = DataWorker.GetMainWindowData();
         _model.NewClients = new ClientListWindowModel(Status.New);
         _model.DeferClients = new ClientListWindowModel(Status.Defer);
-        _model.TransverClients = new ClientListWindowModel(Status.Transferred);
+        _model.TransversClients = new ClientListWindowModel(Status.Transferred);
 
         StartListeningAsync().GetAwaiter();
     }
@@ -48,10 +48,10 @@ public class MainWindowViewModel : INotifyPropertyChanged
         {
             return _model.Call ?? new RelayCommand(async odj =>
             {
-                ClientModel clientModel = new ClientModel { TicketName = _model.Cliente, Id = _model.ClienteId };
+                ClientModel clientModel = new ClientModel { TicketName = _model.Client, Id = _model.ClientId };
                 CallClient(clientModel);
             },
-            _ => _model.WindowId != 0 && _model.Cliente != "---"
+            _ => _model.WindowId != 0 && _model.Client != "---"
             );
         }
     }
@@ -123,13 +123,13 @@ public class MainWindowViewModel : INotifyPropertyChanged
             );
         }
     }
-    public RelayCommand ShowListTransverClientsCommand
+    public RelayCommand ShowListTransversClientsCommand
     {
         get
         {
-            return _model.TransverClients.ShowWindowCommand ?? new RelayCommand(odj =>
+            return _model.TransversClients.ShowWindowCommand ?? new RelayCommand(odj =>
             {
-                ShowListClients(Status.Transferred, ref _model.TransverClients.Window, ref _model.TransverClients.IsVisible);
+                ShowListClients(Status.Transferred, ref _model.TransversClients.Window, ref _model.TransversClients.IsVisible);
             }, _ => _model.WindowId != 0
             );
         }
@@ -151,7 +151,7 @@ public class MainWindowViewModel : INotifyPropertyChanged
         {
             return _model.StartServicingCommand ?? new RelayCommand(odj =>
             {
-                StartServisingEvent.Invoke(odj, EventArgs.Empty);
+                StartServicingEvent.Invoke(odj, EventArgs.Empty);
             }, _ => _model.WindowId != 0
             );
         }
@@ -162,40 +162,40 @@ public class MainWindowViewModel : INotifyPropertyChanged
         {
             return _model.BreakServisingCommand ?? new RelayCommand(odj =>
             {
-                BreakServisingEvent.Invoke(odj, EventArgs.Empty);
+                BreakServicingEvent.Invoke(odj, EventArgs.Empty);
             }, _ => _model.WindowId != 0
             );
         }
     }
-    public RelayCommand StopServisingCommand
+    public RelayCommand StopServicingCommand
     {
         get
         {
             return _model.StopServisingCommand ?? new RelayCommand(odj =>
             {
-                StopServisingEvent.Invoke(odj, EventArgs.Empty);
+                StopServicingEvent.Invoke(odj, EventArgs.Empty);
             }, _ => _model.WindowId != 0
             );
         }
     }
-    public RelayCommand TransverServisingCommand
+    public RelayCommand TransversServicingCommand
     {
         get
         {
             return _model.TransverServisingCommand ?? new RelayCommand(odj =>
             {
-                TransverServisingEvent.Invoke(odj, EventArgs.Empty);
+                TransversServicingEvent.Invoke(odj, EventArgs.Empty);
             }, _ => _model.WindowId != 0
             );
         }
     }
-    public RelayCommand DeferServisingCommand
+    public RelayCommand DeferServicingCommand
     {
         get
         {
             return _model.DeferServisingCommand ?? new RelayCommand(odj =>
             {
-                DeferServisingEvent.Invoke(odj, EventArgs.Empty);
+                DeferServicingEvent.Invoke(odj, EventArgs.Empty);
             }, _ => _model.WindowId != 0
             );
         }
@@ -208,8 +208,8 @@ public class MainWindowViewModel : INotifyPropertyChanged
             {
                 HideListClients(_model.NewClients.Window, ref _model.NewClients.IsVisible);
                 HideListClients(_model.DeferClients.Window, ref _model.DeferClients.IsVisible);
-                HideListClients(_model.TransverClients.Window, ref _model.TransverClients.IsVisible);
-                new PreRegistraationWindow().ShowDialog();
+                HideListClients(_model.TransversClients.Window, ref _model.TransversClients.IsVisible);
+                new PreRegistrationWindow().ShowDialog();
             }, _ => _model.WindowId != 0
             );
         }
@@ -223,7 +223,7 @@ public class MainWindowViewModel : INotifyPropertyChanged
 
             HideListClients(_model.NewClients.Window, ref _model.NewClients.IsVisible);
             HideListClients(_model.DeferClients.Window, ref _model.DeferClients.IsVisible);
-            HideListClients(_model.TransverClients.Window, ref _model.TransverClients.IsVisible);
+            HideListClients(_model.TransversClients.Window, ref _model.TransversClients.IsVisible);
         }
         else
         {
@@ -242,7 +242,7 @@ public class MainWindowViewModel : INotifyPropertyChanged
 
         HideListClients(_model.NewClients.Window, ref _model.NewClients.IsVisible);
         HideListClients(_model.DeferClients.Window, ref _model.DeferClients.IsVisible);
-        HideListClients(_model.TransverClients.Window, ref _model.TransverClients.IsVisible);
+        HideListClients(_model.TransversClients.Window, ref _model.TransversClients.IsVisible);
 
         if (_isShow)
         {
@@ -263,72 +263,72 @@ public class MainWindowViewModel : INotifyPropertyChanged
     {
         HideListClients(_model.NewClients.Window, ref _model.NewClients.IsVisible);
         HideListClients(_model.DeferClients.Window, ref _model.DeferClients.IsVisible);
-        HideListClients(_model.TransverClients.Window, ref _model.TransverClients.IsVisible);
+        HideListClients(_model.TransversClients.Window, ref _model.TransversClients.IsVisible);
 
         ButtonServingVisibility = Visibility.Visible;
         ButtonMainVisibility = Visibility.Collapsed;
         ButtonServingFinishVisibility = Visibility.Collapsed;
-        Cliente = clientModel.TicketName;
+        Client = clientModel.TicketName;
 
-        await clientModel.Call(); 
+        await clientModel.Call();
 
-        BreakServisingEvent = null;
-        StartServisingEvent = null;
-        DeferServisingEvent = null;
-        TransverServisingEvent = null;
-        StopServisingEvent = null;
+        BreakServicingEvent = null;
+        StartServicingEvent = null;
+        DeferServicingEvent = null;
+        TransversServicingEvent = null;
+        StopServicingEvent = null;
 
         //не явился
-        BreakServisingEvent += async (s, e) =>
+        BreakServicingEvent += async (s, e) =>
         {
-            await clientModel.BreakServising();
+            await clientModel.BreakServicing();
             ButtonMainShow();
             Refresh();
         };
 
         //начать обслуживание
-        StartServisingEvent += async (s, e) =>
+        StartServicingEvent += async (s, e) =>
         {
             ButtonServingVisibility = Visibility.Collapsed;
             ButtonServingFinishVisibility = Visibility.Visible;
             ButtonMainVisibility = Visibility.Collapsed;
-            await clientModel.StartServising();
+            await clientModel.StartServicing();
             TimerStart();
 
 
             //отложить
-            DeferServisingEvent += async (s, e) =>
+            DeferServicingEvent += async (s, e) =>
             {
                 ConfirmationDialogWindow confirmationDialog = new();
                 if (confirmationDialog.ShowDialog() == true)
                 {
-                    await clientModel.DeferServising();
+                    await clientModel.DeferServicing();
                     ButtonMainShow();
                     Refresh();
-                    DeferServisingEvent = null;
+                    DeferServicingEvent = null;
                 }
                 confirmationDialog.Close();
             };
 
             //передать
-            TransverServisingEvent += async (s, e) =>
+            TransversServicingEvent += async (s, e) =>
             {
                 TransverClientWindow transverClientWindow = new(clientModel);
                 if (transverClientWindow.ShowDialog() == true)
                 {
                     ButtonMainShow();
                     Refresh();
-                    TransverServisingEvent = null;
+                    TransversServicingEvent = null;
                 }
             };
 
             //завершить
-            StopServisingEvent += async (s, e) =>
+            StopServicingEvent += async (s, e) =>
             {
-                await clientModel.StopServising();
+                await clientModel.StopServicing();
                 ButtonMainShow();
                 Refresh();
-                StopServisingEvent = null;
+                StopServicingEvent = null;
             };
         };
     }
@@ -346,34 +346,27 @@ public class MainWindowViewModel : INotifyPropertyChanged
                 _ = HandleClientAsync(client);
             }
         }
-        catch (Exception ex)
-        {
-
-        }
+        catch { }
     }
     private async Task HandleClientAsync(TcpClient client)
     {
-        using (client)
+        byte[] buffer = new byte[1024];
+        StringBuilder messageBuilder = new StringBuilder();
+
+        using NetworkStream stream = client.GetStream();
+
+        int bytesRead;
+
+        while ((bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length)) > 0)
         {
-            byte[] buffer = new byte[1024];
-            StringBuilder messageBuilder = new StringBuilder();
+            string receivedMessage = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+            messageBuilder.Append(receivedMessage);
+        }
 
-            using (NetworkStream stream = client.GetStream())
-            {
-                int bytesRead;
-
-                while ((bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length)) > 0)
-                {
-                    string receivedMessage = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                    messageBuilder.Append(receivedMessage);
-                }
-            }
-
-            string message = messageBuilder.ToString();
-            if (message == "new Ticket")
-            {
-                Refresh();
-            }
+        string message = messageBuilder.ToString();
+        if (message == "new Ticket")
+        {
+            Refresh();
         }
     }
     private void ButtonMainShow()
@@ -395,20 +388,20 @@ public class MainWindowViewModel : INotifyPropertyChanged
 
         MainWindowModel modelMain = DataWorker.GetMainWindowData();
 
-        CountClientes = modelMain.CountClientes;
-        QueueClienteCount = modelMain.QueueClienteCount;
-        TransferClienteCount = modelMain.TransferClienteCount;
-        DeferClienteCount = modelMain.DeferClienteCount;
-        ClienteId = modelMain.ClienteId;
+        CountClients = modelMain.CountClients;
+        QueueClientsCount = modelMain.QueueClientsCount;
+        TransferClientsCount = modelMain.TransferClientsCount;
+        DeferClientsCount = modelMain.DeferClientsCount;
+        ClientId = modelMain.ClientId;
 
         if (ButtonServingFinishVisibility != Visibility.Visible && ButtonServingVisibility != Visibility.Visible)
         {
-            Cliente = modelMain.Cliente;
+            Client = modelMain.Client;
         }
     }
     private void TimerStart()
     {
-        _model.TimerServising = new DateTime();
+        _model.TimerServicing = new DateTime();
         _model.Timer = new DispatcherTimer();
         _model.Timer.Interval = TimeSpan.FromSeconds(1);
         _model.Timer.Tick += (s, e) =>
@@ -422,13 +415,13 @@ public class MainWindowViewModel : INotifyPropertyChanged
     }
     private void TimerStop()
     {
-        if (_model.Timer != null) _model.Timer.Stop();
-        TimeServising = "00:00";
+        _model.Timer!.Stop();
+        TimeServicing = "00:00";
     }
     private void UpdateDateTime()
     {
-        _model.TimerServising = _model.TimerServising.AddSeconds(1);
-        TimeServising = _model.TimerServising.ToString("mm:ss");
+        _model.TimerServicing = _model.TimerServicing.AddSeconds(1);
+        TimeServicing = _model.TimerServicing.ToString("mm:ss");
     }
     public ClientListWindow ClientNewListWindow
     {
@@ -448,19 +441,19 @@ public class MainWindowViewModel : INotifyPropertyChanged
     }
     public ClientListWindow ClientTransverListWindow
     {
-        get => _model.TransverClients.Window;
+        get => _model.TransversClients.Window;
         set
         {
-            _model.TransverClients.Window = value;
+            _model.TransversClients.Window = value;
         }
     }
-    public string? IPAdress
+    public string? IpAddress
     {
-        get => _model.IpAdress;
+        get => _model.IpAddress;
         set
         {
-            _model.IpAdress = value;
-            NotifyPropertyChanged("IPAdress");
+            _model.IpAddress = value;
+            NotifyPropertyChanged(nameof(IpAddress));
         }
     }
     public long? WindowId
@@ -472,7 +465,7 @@ public class MainWindowViewModel : INotifyPropertyChanged
         set
         {
             _model.WindowId = value;
-            NotifyPropertyChanged("WindowId");
+            NotifyPropertyChanged(nameof(WindowId));
         }
     }
     public string? WindowName
@@ -481,25 +474,25 @@ public class MainWindowViewModel : INotifyPropertyChanged
         set
         {
             _model.WindowsName = value;
-            NotifyPropertyChanged("WindowsName");
+            NotifyPropertyChanged(nameof(WindowName));
         }
     }
-    public string? Cliente
+    public string? Client
     {
-        get => _model.Cliente;
+        get => _model.Client;
         set
         {
-            _model.Cliente = value;
-            NotifyPropertyChanged("Cliente");
+            _model.Client = value;
+            NotifyPropertyChanged(nameof(Client));
         }
     }
-    public long ClienteId
+    public long ClientId
     {
-        get => _model.ClienteId;
+        get => _model.ClientId;
         set
         {
-            _model.ClienteId = value;
-            NotifyPropertyChanged("ClienteId");
+            _model.ClientId = value;
+            NotifyPropertyChanged(nameof(ClientId));
         }
     }
     public string? ErrorMessage
@@ -508,43 +501,43 @@ public class MainWindowViewModel : INotifyPropertyChanged
         set
         {
             _model.ErrorMessage = value;
-            NotifyPropertyChanged("ErrorMessage");
+            NotifyPropertyChanged(nameof(ErrorMessage));
         }
     }
-    public string? CountClientes
+    public string? CountClients
     {
-        get => _model.CountClientes;
+        get => _model.CountClients;
         set
         {
-            _model.CountClientes = value;
-            NotifyPropertyChanged("CountClientes");
+            _model.CountClients = value;
+            NotifyPropertyChanged(nameof(CountClients));
         }
     }
-    public string? QueueClienteCount
+    public string? QueueClientsCount
     {
-        get => _model.QueueClienteCount;
+        get => _model.QueueClientsCount;
         set
         {
-            _model.QueueClienteCount = value;
-            NotifyPropertyChanged("QueueClienteCount");
+            _model.QueueClientsCount = value;
+            NotifyPropertyChanged(nameof(QueueClientsCount));
         }
     }
-    public string? TransferClienteCount
+    public string? TransferClientsCount
     {
-        get => _model.TransferClienteCount;
+        get => _model.TransferClientsCount;
         set
         {
-            _model.TransferClienteCount = value;
-            NotifyPropertyChanged("TransferClienteCount");
+            _model.TransferClientsCount = value;
+            NotifyPropertyChanged(nameof(TransferClientsCount));
         }
     }
-    public string? DeferClienteCount
+    public string? DeferClientsCount
     {
-        get => _model.DeferClienteCount;
+        get => _model.DeferClientsCount;
         set
         {
-            _model.DeferClienteCount = value;
-            NotifyPropertyChanged("DeferClienteCount");
+            _model.DeferClientsCount = value;
+            NotifyPropertyChanged(nameof(DeferClientsCount));
         }
     }
 }

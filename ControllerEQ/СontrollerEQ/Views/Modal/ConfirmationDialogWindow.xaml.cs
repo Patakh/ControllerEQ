@@ -1,6 +1,6 @@
 ﻿using System.Windows;
-using СontrollerEQ.ViewModel.Modal;
-namespace СontrollerEQ.Views.Modal;
+using ControllerEQ.ViewModel.Modal;
+namespace ControllerEQ.Views.Modal;
 
 /// <summary>
 /// Логика взаимодействия для ConfirmationDialogWindow.xaml

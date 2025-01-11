@@ -1,7 +1,7 @@
 ﻿using System.Windows;
-using СontrollerEQ.Command;
+using ControllerEQ.Command;
 
-namespace СontrollerEQ.ViewModel.Modal;
+namespace ControllerEQ.ViewModel.Modal;
 
 public class ConfirmationDialogWindowViewModel
 {

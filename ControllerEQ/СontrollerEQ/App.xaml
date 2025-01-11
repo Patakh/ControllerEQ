@@ -1,7 +1,7 @@
-﻿<Application x:Class="СontrollerEQ.App"
+﻿<Application x:Class="ControllerEQ.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:СontrollerEQ"
+             xmlns:local="clr-namespace:ControllerEQ"
              DispatcherUnhandledException="Application_DispatcherUnhandledException"
              StartupUri="Views/MainWindow.xaml">
     <Application.Resources>

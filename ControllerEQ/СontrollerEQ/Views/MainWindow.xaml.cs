@@ -1,8 +1,8 @@
 ﻿using System.Windows;
-using СontrollerEQ.HandleKey; 
-using СontrollerEQ.ViewModel;
+using ControllerEQ.HandleKey; 
+using ControllerEQ.ViewModel;
 
-namespace СontrollerEQ.Views;
+namespace ControllerEQ.Views;
 
 /// <summary>
 /// Interaction logic for MainWindow.xaml

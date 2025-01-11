@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace СontrollerEQ
+namespace ControllerEQ
 {
     /// <summary>
     /// Логика взаимодействия для SettingWindow.xaml

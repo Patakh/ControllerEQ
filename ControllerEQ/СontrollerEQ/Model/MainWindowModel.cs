@@ -1,31 +1,31 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Threading;
-using СontrollerEQ.Command;
+using ControllerEQ.Command;
 
-namespace СontrollerEQ.Model;
+namespace ControllerEQ.Model;
 
 public class MainWindowModel
 {
-    public string? IpAdress;
+    public string? IpAddress;
     public long? WindowId;
     public string? WindowsName;
-    public string? Cliente;
-    public long ClienteId;
+    public string? Client;
+    public long ClientId;
     public string? ErrorMessage;
-    public string? CountClientes;
-    public string? QueueClienteCount;
-    public string? TransferClienteCount { get; set; }
-    public string? DeferClienteCount;
+    public string? CountClients;
+    public string? QueueClientsCount;
+    public string? TransferClientsCount { get; set; }
+    public string? DeferClientsCount;
     public bool IsShow = true;
 
-    public string TimeServising = "00:00";
-    public DateTime TimerServising;
+    public string TimeServicing = "00:00";
+    public DateTime TimerServicing;
 
     public DispatcherTimer Timer;
     public ClientListWindowModel? NewClients;
     public ClientListWindowModel? DeferClients;
-    public ClientListWindowModel? TransverClients;
+    public ClientListWindowModel? TransversClients;
       
     public Visibility ButtonServingVisibility = Visibility.Collapsed;
     public Visibility ButtonServingFinishVisibility = Visibility.Collapsed;

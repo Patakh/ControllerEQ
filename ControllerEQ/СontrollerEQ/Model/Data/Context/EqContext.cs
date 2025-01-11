@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using Microsoft.EntityFrameworkCore;
 
-namespace СontrollerEQ.Model.Data.Context;
+namespace ControllerEQ.Model.Data.Context;
 
 public partial class EqContext : DbContext
 {
